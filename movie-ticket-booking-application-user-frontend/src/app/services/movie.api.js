@@ -106,6 +106,17 @@ export const movieApi = createApi({
                     })
                 }
             },
+        }),
+        getShowtimesByMovie: builder.query({
+            query: ({ showDate, movieId }) => {
+                return {
+                    url: `movies/${movieId}/showtimes`,
+                    method: "GET",
+                    params: {
+                        showDate
+                    }
+                }
+            }
         })
     }),
 });
@@ -117,5 +128,6 @@ export const {
     useGetShowingNowMoviesQuery,
     useGetComingSoonMoviesQuery,
     useSearchMoviesQuery,
-    useLazySearchMoviesQuery
+    useLazySearchMoviesQuery,
+    useGetShowtimesByMovieQuery
 } = movieApi;

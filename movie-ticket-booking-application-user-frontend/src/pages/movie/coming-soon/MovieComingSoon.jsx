@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import MovieReviewList from '../../review/components/MovieReviewList';
 import MovieComingSoonList from '../components/MovieComingSoonList';
-import ListBlogLatest from '../../blog/components/ListBlogLatest';
 
 function MovieComingSoon() {
     return (

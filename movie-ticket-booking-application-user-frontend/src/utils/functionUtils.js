@@ -199,7 +199,7 @@ export const createLabel = (showtime) => {
 }
 
 export const prepareImageURL = (url) => {
-    if(url.startsWith(DOMAIN)) {
+    if (url.startsWith(DOMAIN)) {
         return url.substring(DOMAIN.length);
     }
     return url;

@@ -1,9 +1,9 @@
 import React from 'react'
 import { Helmet } from 'react-helmet'
+import { Link } from 'react-router-dom'
 import ListBlogLatest from '../../blog/components/ListBlogLatest'
 import MovieScheduleContainer from '../../home/components/MovieScheduleContainer'
 import MovieComingSoonList from '../components/MovieComingSoonList'
-import { Link } from 'react-router-dom'
 
 function Showtimes() {
     return (

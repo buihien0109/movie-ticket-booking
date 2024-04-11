@@ -1,7 +1,9 @@
 package com.example.movie.ticket.booking.application.controller.web;
 
+import com.example.movie.ticket.booking.application.repository.ShowtimeRepository;
 import com.example.movie.ticket.booking.application.service.MovieService;
 import com.example.movie.ticket.booking.application.service.ReviewService;
+import com.example.movie.ticket.booking.application.service.ShowtimeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class MovieWebController {
     private final MovieService blogWebService;
     private final ReviewService reviewService;
+    private final ShowtimeService showtimeService;
 
     @GetMapping("/search")
     public ResponseEntity<?> searchMovies(@RequestParam(required = false, defaultValue = "1") Integer page,
@@ -45,5 +48,10 @@ public class MovieWebController {
     @GetMapping("/coming-soon")
     public ResponseEntity<?> getComingSoonMovies() {
         return ResponseEntity.ok(blogWebService.getComingSoonMovies());
+    }
+
+    @GetMapping("/{id}/showtimes")
+    public ResponseEntity<?> getShowtimesByMovie(@PathVariable Integer id, @RequestParam String showDate) {
+        return ResponseEntity.ok(showtimeService.getShowtimesByMovie(id, showDate));
     }
 }

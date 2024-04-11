@@ -146,4 +146,23 @@ public class ShowtimeService {
         return (start1.compareTo(start2) >= 0 && start1.compareTo(end2) <= 0) ||
                 (end1.compareTo(start2) >= 0 && end1.compareTo(end2) <= 0);
     }
+
+    public List<Showtime> getShowtimesByMovie(Integer movieId, String showDateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate showDate = LocalDate.parse(showDateStr, formatter);
+        LocalDate currentDate = LocalDate.now(ZoneId.systemDefault());
+
+        List<Showtime> showtimes = showtimeRepository.findByMovie_IdAndDate(movieId, showDate);
+
+        if (showDate.isEqual(currentDate)) {
+            // Nếu showDate là ngày hiện tại, lọc ra những showtime có startTime sau thời gian hiện tại
+            LocalTime currentTime = LocalTime.now(ZoneId.systemDefault());
+            return showtimes.stream()
+                    .filter(showtime -> LocalTime.parse(showtime.getStartTime()).isAfter(currentTime))
+                    .collect(Collectors.toList());
+        } else {
+            // Nếu showDate là ngày trong quá khứ hoặc tương lai, trả về tất cả showtime
+            return showtimes;
+        }
+    }
 }

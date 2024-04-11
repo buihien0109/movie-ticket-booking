@@ -100,6 +100,8 @@ function ModalUpdateReview({ open, handleClose, review, movieId, onSetPage }) {
                         Đánh giá phim
                     </h1>
 
+                    <hr className="my-4" />
+
                     <div className='mb-6'>
                         <div className="flex justify-center">
                             {Array.from({ length: 10 }, (_, index) => (
@@ -168,7 +170,7 @@ function ModalUpdateReview({ open, handleClose, review, movieId, onSetPage }) {
                             <p className="text-red-500 text-xs mt-1">{errors.comment?.message}</p>
                         </div>
 
-                        <div className='flex items-center gap-2 mb-2'>
+                        <div className='flex items-center gap-2 mb-4'>
                             <div className="rounded-lg border border-gray-300 w-28 h-28 flex justify-center items-center">
                                 <label htmlFor="upload" className="flex flex-col items-center justify-center gap-2 cursor-pointer p-4 w-full h-full">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 fill-white stroke-pink-600" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -226,13 +228,15 @@ function ModalUpdateReview({ open, handleClose, review, movieId, onSetPage }) {
                             ))}
                         </div>
 
-                        <button
-                            type="submit"
-                            className="flex items-center justify-center text-white bg-pink-600 hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-sm px-5 py-2.5 text-center"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? "Đang xử lý..." : "Hoàn tất"}
-                        </button>
+                        <div className="flex justify-center">
+                            <button
+                                type="submit"
+                                className="flex items-center justify-center text-white bg-pink-600 hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-full text-sm px-8 py-2.5 text-center"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Đang xử lý..." : "Hoàn tất"}
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
