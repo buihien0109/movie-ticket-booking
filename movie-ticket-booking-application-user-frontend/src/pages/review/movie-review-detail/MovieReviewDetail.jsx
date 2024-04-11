@@ -2,11 +2,12 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useParams } from 'react-router-dom';
 import { useGetMovieDetailQuery } from '../../../app/services/movie.api';
+import Error from '../../../components/error/Error';
 import Loading from '../../../components/loading/Loading';
-import ModalTrailer from '../../../components/modal-trailer/ModalTrailer';
-import useModal from '../../../components/modal-trailer/useModal';
 import MovieReviewOverview from '../components/MovieReviewOverview';
 import ReviewList from '../components/ReviewList';
+import useModal from '../../../components/modal/hook/useModal';
+import ModalTrailer from '../../../components/modal/trailer/ModalTrailer';
 
 const Breadcrumb = () => (
   <div className="max-w-6xl mx-auto my-5">
@@ -32,42 +33,22 @@ const Breadcrumb = () => (
   </div>
 );
 
-const ReviewContent = ({ movie }) => (
-  <div className="review-content lg:col-span-8">
-    {
-      movie.reviews.length === 0 ? (
-        <div className="py-5 text-center">
-          <div>
-            <img src="https://homepage.momocdn.net/next-js/_next/static/public/cinema/not-found.svg" alt="Not found" loading="lazy" width="120" height="120" className=" mx-auto block" />
-          </div>
-          <div className="mb-0 mt-3 font-semibold text-gray-500">Phim hiện tại chưa có bài đánh giá.
-            <br />
-            Trở lại trang <Link to={"/phim-chieu"} className="text-gray-800 underline hover:text-pink-500">Đặt Vé Xem Phim</Link> ngay!
-          </div>
-        </div>
-      ) : (
-        <ReviewList movie={movie} />
-      )
-    }
-  </div>
-);
-
-function MovieReviewReview() {
+function MovieReviewDetail() {
   const { movieId, movieSlug } = useParams();
   const { open, handleOpen } = useModal();
 
   const {
     data: movie,
-    isLoading: isLoadingGetBlogDetail,
-    isFetching: isFetchingGetBlogDetail,
-    isError: isErrorGetBlogDetail,
+    isLoading: isLoadingGetMovieDetail,
+    isFetching: isFetchingGetMovieDetail,
+    isError: isErrorGetMovieDetail,
   } = useGetMovieDetailQuery({ id: movieId, slug: movieSlug });
 
-  if (isLoadingGetBlogDetail || isFetchingGetBlogDetail) {
+  if (isLoadingGetMovieDetail || isFetchingGetMovieDetail) {
     return <Loading />;
   }
 
-  if (isErrorGetBlogDetail) {
+  if (isErrorGetMovieDetail) {
     return <Error />;
   }
 
@@ -80,7 +61,9 @@ function MovieReviewReview() {
       <div className="mx-auto w-full max-w-6xl px-5 md:px-8 lg:px-8 py-4 md:py-8">
         <div className="grid grid-cols-1 gap-4 sm:gap-8 lg:grid-cols-12">
           <MovieReviewOverview movie={movie} />
-          <ReviewContent movie={movie} />
+          <div className="review-content lg:col-span-8" >
+            <ReviewList movie={movie} />
+          </div >
         </div>
       </div>
       <ModalTrailer movie={movie} open={open} handleOpen={handleOpen} />
@@ -88,4 +71,4 @@ function MovieReviewReview() {
   )
 }
 
-export default MovieReviewReview
+export default MovieReviewDetail

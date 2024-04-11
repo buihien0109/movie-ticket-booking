@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ModalBase from '../../../components/modal-trailer/ModalBase';
-import useModal from '../../../components/modal-trailer/useModal';
 import { formatCurrency, formatDate, formatMovieAge } from '../../../utils/functionUtils';
+import useModal from '../../../components/modal/hook/useModal';
+import ModalBase from '../../../components/modal/base/ModalBase';
 
 const parseGraphicsType = (type) => {
     switch (type) {
@@ -35,11 +35,11 @@ function HistoryItem({ order }) {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatDate(order.createdAt)}
                 </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {order.id}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                     <Link to={`/phim/${order.showtime.movie.id}/${order.showtime.movie.slug}`} className="text-sm text-gray-900 hover:underline">{order.showtime.movie.name}</Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {order.ticketItems.length}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatCurrency(order.totalPrice)}
@@ -52,7 +52,7 @@ function HistoryItem({ order }) {
                 </td>
             </tr>
 
-            <ModalBase isOpen={open} onClose={handleOpen} size="md">
+            <ModalBase isOpen={open} onClose={handleOpen} size="md" style={{ width: "1000px" }}>
                 <div className="flex h-full flex-col bg-white overflow-auto rounded-md p-0">
                     <div className="modal-body h-full overflow-auto rounded bg-white p-0">
                         <div className="flex flex-col md:flex-row">
@@ -143,9 +143,15 @@ function HistoryItem({ order }) {
                                 className="order-1 flex basis-1/2 items-center justify-center md:order-2"
                                 style={{ background: `url('https://homepage.momocdn.net/jk/momo2020/img/intro/qrcode-pattern.png') 10px 10px no-repeat, linear-gradient(to top, rgb(193, 23, 124), rgb(225, 27, 144))` }}
                             >
-                                <div className="px-8 py-9 text-center">
-                                    <h4 className="mb-5 text-base text-white">Quét mã QR bằng MoMo để thanh toán</h4>
+                                <div className="flex justify-center flex-col">
+                                    <div className="flex justify-center">
+                                        <img src={order.qrCodePath} alt="QR Code" />
+                                    </div>
+                                    <div className="mt-4 text-center">
+                                        <h4 className="mb-4 text-sm text-white">Mã QR được sử dụng khi quét vé tại rạp</h4>
 
+                                        <a href={`${order.qrCodePath}/download`} download={true} className="!flex items-center justify-center btn-primary !px-8 py-3 !text-md bg-white text-gray-800 rounded-full text-sm hover:bg-gray-100">Tải xuống QRCode</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

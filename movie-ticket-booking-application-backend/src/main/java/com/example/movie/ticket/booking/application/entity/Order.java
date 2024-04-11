@@ -45,10 +45,12 @@ public class Order {
     @Fetch(FetchMode.SUBSELECT)
     List<OrderServiceItem> serviceItems = new ArrayList<>();
 
+    String qrCodePath;
+
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
-    public Integer getTotalPrice() {
+    public int getTotalPrice() {
         Integer ticketPrice = ticketItems.stream()
                 .map(OrderTicketItem::getPrice)
                 .reduce(0, Integer::sum);
@@ -67,5 +69,15 @@ public class Order {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public void addTicketItem(OrderTicketItem orderTicketItem) {
+        orderTicketItem.setOrder(this);
+        ticketItems.add(orderTicketItem);
+    }
+
+    public void addServiceItem(OrderServiceItem orderServiceItem) {
+        orderServiceItem.setOrder(this);
+        serviceItems.add(orderServiceItem);
     }
 }

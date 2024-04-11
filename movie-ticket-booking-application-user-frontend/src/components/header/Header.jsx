@@ -5,9 +5,9 @@ import { toast } from 'react-toastify';
 import logo from "../../../public/logo.png";
 import { logout } from "../../app/slices/auth.slice";
 import { setActiveModal } from "../../app/slices/authModal.slice";
-import ForgotPasswordModal from "../modal-auth/ForgotPasswordModal";
-import LoginModal from "../modal-auth/LoginModal";
-import RegisterModal from "../modal-auth/RegisterModal";
+import LoginModal from "../modal/auth/LoginModal";
+import ForgotPasswordModal from "../modal/auth/ForgotPasswordModal";
+import RegisterModal from "../modal/auth/RegisterModal";
 
 function Header() {
     const { auth } = useSelector((state) => state);

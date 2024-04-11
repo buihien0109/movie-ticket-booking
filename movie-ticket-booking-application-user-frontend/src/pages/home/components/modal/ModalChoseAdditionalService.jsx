@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import { useGetAllAdditionalServicesQuery } from '../../../../app/services/additionalService.api'
 import Error from '../../../../components/error/Error'
 import LoadingInside from '../../../../components/loading/LoadingInside'
-import ModalBase from '../../../../components/modal-trailer/ModalBase'
-import useModal from '../../../../components/modal-trailer/useModal'
 import { formatCurrency } from '../../../../utils/functionUtils'
 import AdditionalServiceItem from './AdditionalServiceItem'
 import ModalOrder from './ModalOrder'
+import useModal from '../../../../components/modal/hook/useModal'
+import ModalBase from '../../../../components/modal/base/ModalBase'
 
 function ModalChoseAdditionalService({ open, handleOpen, zIndex, ...props }) {
     const [selectedServices, setSelectedServices] = useState([]);
@@ -35,7 +35,7 @@ function ModalChoseAdditionalService({ open, handleOpen, zIndex, ...props }) {
     const totalPrice = selectedServices.reduce((total, service) => total + service.count * service.price, 0);
     return (
         <>
-            <ModalBase isOpen={open} onClose={handleOpen} size="sm" zIndex={zIndex}>
+            <ModalBase isOpen={open} onClose={handleOpen} size="sm" zIndex={zIndex} style={{width: "500px"}}>
                 <div className="flex h-full flex-col bg-white overflow-auto rounded-md p-0">
                     <div className="relative flex shrink-0 items-center bg-pink-600 px-4 py-3">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="absolute left-3 h-6 shrink-0 cursor-pointer text-white transition-all hover:opacity-70"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path></svg>

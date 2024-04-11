@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -16,13 +19,16 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping("/reviews")
-    public ResponseEntity<?> createReview(@Valid @RequestBody UpsertReviewRequest request) {
-        return ResponseEntity.ok(reviewService.createReview(request));
+    public ResponseEntity<?> createReview(@Valid @ModelAttribute UpsertReviewRequest request,
+                                          @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+        return ResponseEntity.ok(reviewService.createReview(request, files));
     }
 
     @PutMapping("/reviews/{id}")
-    public ResponseEntity<?> updateReview(@Valid @RequestBody UpsertReviewRequest request, @PathVariable Integer id) {
-        return ResponseEntity.ok(reviewService.updateReview(request, id));
+    public ResponseEntity<?> updateReview(@Valid @ModelAttribute UpsertReviewRequest request,
+                                          @RequestParam(value = "files", required = false) List<MultipartFile> files,
+                                          @PathVariable Integer id) {
+        return ResponseEntity.ok(reviewService.updateReview(request, files, id));
     }
 
     @DeleteMapping("/reviews/{id}")

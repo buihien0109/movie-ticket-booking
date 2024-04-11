@@ -23,7 +23,6 @@ export const reviewApi = createApi({
                 method: "GET",
                 params: { page },
             }),
-            providesTags: ["Review"],
             transformResponse: (response) => {
                 return {
                     ...response,
@@ -41,6 +40,27 @@ export const reviewApi = createApi({
                 };
             },
         }),
+        getAllReviewsByMovieId: builder.query({
+            query: ({ movieId, page }) => ({
+                url: `${API_DOMAIN_PUBLIC}movies/${movieId}/reviews`,
+                method: "GET",
+                params: { page },
+            }),
+            providesTags: ["Review"],
+            transformResponse: (response) => {
+                return {
+                    ...response,
+                    content: response.content.map(review => ({
+                        ...review,
+                        images: review.images ? review.images.map(image => image.startsWith("/api") ? `${DOMAIN}${image}` : image) : [],
+                        user: {
+                            ...review.user,
+                            avatar: review.user.avatar.startsWith("/api") ? `${DOMAIN}${review.user.avatar}` : review.user.avatar
+                        }
+                    })),
+                };
+            },
+        }),
         createReview: builder.mutation({
             query: (newReview) => ({
                 url: `reviews`,
@@ -50,10 +70,10 @@ export const reviewApi = createApi({
             invalidatesTags: ["Review"],
         }),
         updateReview: builder.mutation({
-            query: ({ reviewId, ...updatedReview }) => ({
-                url: `reviews/${reviewId}`,
+            query: ({ id, formData }) => ({
+                url: `reviews/${id}`,
                 method: "PUT",
-                body: updatedReview
+                body: formData
             }),
             invalidatesTags: ["Review"],
         }),
@@ -70,6 +90,8 @@ export const reviewApi = createApi({
 // Export hooks
 export const {
     useGetAllReviewsOfMoviesQuery,
+    useGetAllReviewsByMovieIdQuery,
+    useLazyGetAllReviewsByMovieIdQuery,
     useCreateReviewMutation,
     useUpdateReviewMutation,
     useDeleteReviewMutation,

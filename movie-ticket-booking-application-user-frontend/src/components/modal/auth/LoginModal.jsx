@@ -3,8 +3,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
-import { useLoginMutation } from '../../app/services/auth.api';
-import ModalBase from '../modal-trailer/ModalBase';
+import { useLoginMutation } from '../../../app/services/auth.api';
+import ModalBase from '../base/ModalBase';
 
 const schema = yup.object({
     email: yup.string()

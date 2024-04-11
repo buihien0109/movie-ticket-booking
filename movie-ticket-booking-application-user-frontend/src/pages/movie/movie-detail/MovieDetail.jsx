@@ -4,10 +4,11 @@ import { Link, useParams } from 'react-router-dom';
 import { useGetMovieDetailQuery } from '../../../app/services/movie.api';
 import Error from '../../../components/error/Error';
 import Loading from '../../../components/loading/Loading';
-import ModalTrailer from '../../../components/modal-trailer/ModalTrailer';
-import useModal from '../../../components/modal-trailer/useModal';
+import useModal from '../../../components/modal/hook/useModal';
+import ModalTrailer from '../../../components/modal/trailer/ModalTrailer';
 import { formatDate, formatMovieAge } from '../../../utils/functionUtils';
 import ListBlogLatest from '../../blog/components/ListBlogLatest';
+import ShowDate from '../../home/components/ShowDate';
 import ReviewList from '../../review/components/ReviewList';
 import MovieShowingNowListNotSlider from '../components/MovieShowingNowListNotSlider';
 
@@ -16,13 +17,8 @@ function MovieDetail() {
     const { data: movie, isLoading, isError } = useGetMovieDetailQuery({ id: movieId, slug: movieSlug })
     const { open, handleOpen } = useModal();
 
-    if (isLoading) {
-        return <Loading />
-    }
-
-    if (isError) {
-        return <Error />
-    }
+    if (isLoading) return <Loading />
+    if (isError) return <Error />
 
     return (
         <>
@@ -174,21 +170,22 @@ function MovieDetail() {
             <div className="mx-auto w-full max-w-6xl px-5 md:px-8 lg:px-8">
                 <div className="-mt-16 grid grid-cols-1 pt-16 lg:grid-cols-3 lg:gap-12">
                     <div className="lg:col-span-2 lg:col-start-1">
-                        <section className="border-t border-gray-200 pb-8 pt-4 md:py-8">
-                            {
-                                movie.reviews.length == 0 && (
-                                    <div className="py-5 text-center">
-                                        <div>
-                                            <img src="https://homepage.momocdn.net/next-js/_next/static/public/cinema/not-found.svg" alt="Not found" loading="lazy" width="120" height="120" className=" mx-auto block" />
-                                        </div>
-                                        <div className="mb-0 mt-3 font-semibold text-gray-500">Phim hiện tại chưa có bài đánh giá.
-                                            <br />
-                                            Trở lại trang <Link to={"/phim-chieu"} className="text-gray-800 underline hover:text-pink-500">Đặt Vé Xem Phim</Link> ngay!
+                        <section className="py-8">
+                            <div className="mb-2 sm:mb-0">
+                                <h2 className="text-xl font-bold sm:pr-80">Lịch chiếu Tà Năng Phan Dũng</h2>
+
+                                <div className="relative mt-4">
+                                    <div className="rounded md:border md:border-gray-200">
+                                        <div className="box-nav z-20 border-b border-gray-200 bg-white py-2 top-[62px] sticky">
+                                            <ShowDate />
                                         </div>
                                     </div>
-                                )
-                            }
-                            {movie.reviews.length > 0 && <ReviewList movie={movie} />}
+                                </div>
+                            </div>
+                        </section>
+
+                        <section className="border-t border-gray-200 pb-8 pt-4 md:py-8">
+                            <ReviewList movie={movie} />
                         </section>
 
                         <section id="phimStaff" className="border-t border-gray-200 py-8">

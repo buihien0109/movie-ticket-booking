@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ModalTrailer from '../../../components/modal-trailer/ModalTrailer';
-import useModal from '../../../components/modal-trailer/useModal';
 import { formatDate, formatMovieAge } from '../../../utils/functionUtils';
+import useModal from '../../../components/modal/hook/useModal';
+import ModalTrailer from '../../../components/modal/trailer/ModalTrailer';
 
 function MoviePoster({ movie, handleOpen }) {
     return (

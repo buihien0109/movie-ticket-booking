@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import useModal from '../../../components/modal-trailer/useModal';
 import { formatMovieAge } from '../../../utils/functionUtils';
 import ModalChoseTicket from './modal/ModalChoseTicket';
+import useModal from '../../../components/modal/hook/useModal';
 
 // Extract the movie poster into a separate component
 const MoviePoster = ({ movie }) => (

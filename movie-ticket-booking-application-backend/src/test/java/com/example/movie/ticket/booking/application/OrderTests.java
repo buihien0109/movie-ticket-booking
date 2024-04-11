@@ -101,9 +101,9 @@ public class OrderTests {
         }
     }
 
-    // Generate order id has 10 digits
+    // Generate order id has 8 digits
     private Integer generateOrderId() {
         Random random = new Random();
-        return random.nextInt(900000000) + 100000000;
+        return random.nextInt(90000000) + 10000000;
     }
 }

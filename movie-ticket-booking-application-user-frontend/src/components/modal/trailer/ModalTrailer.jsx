@@ -1,10 +1,10 @@
 import React from 'react';
-import ModalBase from "./ModalBase";
+import ModalBase from '../base/ModalBase';
 
 function ModalTrailer({ movie, open, handleOpen }) {
     return (
         <>
-            <ModalBase isOpen={open} onClose={handleOpen} size="md">
+            <ModalBase isOpen={open} onClose={handleOpen} size="md" style={{ width: "1000px" }}>
                 <div className="modal-body h-full overflow-auto rounded-md bg-black/85 p-0">
                     <div className="relative aspect-[16/9] w-full bg-black">
                         <div className="">
@@ -40,7 +40,7 @@ function ModalTrailer({ movie, open, handleOpen }) {
                             </p>
                             <div className="mt-3 flex space-x-3">
                                 <a className="btn tracking-engage-btn-popup inline-block cursor-pointer rounded-md bg-pink-700 px-5 py-1.5 text-center text-sm  font-bold text-white text-opacity-90 transition-all hover:bg-pink-800"
-                                href="/cinema/mai-23711#phimLichChieu">Đặt vé</a>
+                                    href="/cinema/mai-23711#phimLichChieu">Đặt vé</a>
                                 <button onClick={handleOpen} className="btn inline-block cursor-pointer rounded-md bg-gray-500 px-5 py-1.5 text-center text-sm font-bold  text-gray-100 text-opacity-90 transition-all hover:bg-gray-600">Đóng</button>
                             </div>
                         </div>

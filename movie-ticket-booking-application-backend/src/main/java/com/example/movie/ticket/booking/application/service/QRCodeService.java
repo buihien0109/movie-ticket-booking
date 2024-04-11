@@ -1,6 +1,5 @@
 package com.example.movie.ticket.booking.application.service;
 
-import com.example.movie.ticket.booking.application.model.response.ImageResponse;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
@@ -15,14 +14,17 @@ import java.io.ByteArrayOutputStream;
 @Service
 @RequiredArgsConstructor
 public class QRCodeService {
-    private final ImageService imageService;
+    public byte[] generateQRCodeImage(String text, int width, int height) {
+        try {
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
 
-    public byte[] generateQRCodeImage(String text, int width, int height) throws Exception {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-
-        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
-        return pngOutputStream.toByteArray();
+            ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+            return pngOutputStream.toByteArray();
+        } catch (Exception e) {
+            log.error("Cannot generate QR code image: {}", e.getMessage());
+            throw new RuntimeException("Cannot generate QR code image: " + e.getMessage());
+        }
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class OrderRepositoryImpl implements OrderRepositoryCustom {
+public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
     @PersistenceContext
     private EntityManager entityManager;

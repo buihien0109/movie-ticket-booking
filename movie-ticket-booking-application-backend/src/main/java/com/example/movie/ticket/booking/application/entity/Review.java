@@ -1,11 +1,15 @@
 package com.example.movie.ticket.booking.application.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Type;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,6 +28,14 @@ public class Review {
     String comment;
 
     Integer rating;
+
+    @Type(JsonType.class)
+    @Column(columnDefinition = "json")
+    List<String> feeling = new ArrayList<>();
+
+    @Type(JsonType.class)
+    @Column(columnDefinition = "json")
+    List<String> images = new ArrayList<>();
 
     Date createdAt;
     Date updatedAt;

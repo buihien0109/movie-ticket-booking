@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ScheduleTask {
+public class SeatScheduleTask {
     private final SeatReservationRepository seatReservationRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -25,7 +25,7 @@ public class ScheduleTask {
     public void releaseExpiredReservations() {
         LocalDateTime now = LocalDateTime.now();
 
-        // Tìm tất cả vé được giữ (HELD) mà đã quá 5 phút
+        // Tìm tất cả vé được giữ (HELD) mà đã quá 10 phút
         List<SeatReservation> expiredReservations = seatReservationRepository
                 .findByStatusAndStartTimeBefore(SeatReservationStatus.HELD, now.minusMinutes(10));
 

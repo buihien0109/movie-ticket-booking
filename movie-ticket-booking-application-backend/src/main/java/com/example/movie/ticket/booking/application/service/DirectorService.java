@@ -62,18 +62,11 @@ public class DirectorService {
         Director existingDirector = directorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đạo diễn có id = " + id));
 
-        // Kiểm tra xem đạo diễn có đang áp dụng cho phim nào không. Nếu count > 0 thì không được xóa -> throw exception
         long count = movieRepository.countByDirectors_Id(id);
         if (count > 0) {
             throw new BadRequestException("Không thể xóa đạo diễn này vì đang áp dụng cho phim");
         }
 
-        // Kiểm tra xem đạo diễn có avatar không. Nếu có thì xóa file avatar
-        if (existingDirector.getAvatar() != null) {
-            FileUtils.deleteFile(existingDirector.getAvatar());
-        }
-
-        // Xóa đạo diễn
         directorRepository.deleteById(id);
     }
 }

@@ -37,6 +37,25 @@ export const authApi = createApi({
                 },
             }),
         }),
+        checkForgotPasswordToken: builder.query({
+            query: (token) => ({
+                url: `auth/check-forgot-password-token/${token}`,
+                method: "GET",
+            }),
+        }),
+        checkRegisterToken: builder.query({
+            query: (token) => ({
+                url: `auth/check-register-token/${token}`,
+                method: "GET",
+            }),
+        }),
+        changePassword: builder.mutation({
+            query: (data) => ({
+                url: "auth/change-password",
+                method: "POST",
+                body: data,
+            }),
+        }),
     }),
 });
 
@@ -44,4 +63,7 @@ export const {
     useLoginMutation,
     useRegisterAccountMutation,
     useForgotPasswordMutation,
+    useCheckForgotPasswordTokenQuery,
+    useChangePasswordMutation,
+    useCheckRegisterTokenQuery,
 } = authApi;

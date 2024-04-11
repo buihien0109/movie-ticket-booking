@@ -13,6 +13,7 @@ import com.example.movie.ticket.booking.application.model.request.LoginRequest;
 import com.example.movie.ticket.booking.application.model.request.RegisterRequest;
 import com.example.movie.ticket.booking.application.model.request.ResetPasswordRequest;
 import com.example.movie.ticket.booking.application.model.response.AuthResponse;
+import com.example.movie.ticket.booking.application.model.response.VerifyTokenResponse;
 import com.example.movie.ticket.booking.application.repository.TokenConfirmRepository;
 import com.example.movie.ticket.booking.application.repository.UserRepository;
 import com.example.movie.ticket.booking.application.security.JwtUtils;
@@ -115,39 +116,43 @@ public class AuthService {
     }
 
     @Transactional
-    public Map<String, Object> confirmEmail(String token) {
-        Map<String, Object> data = new HashMap<>();
+    public VerifyTokenResponse checkRegisterToken(String token) {
+        VerifyTokenResponse response = VerifyTokenResponse.builder()
+                .token(token)
+                .success(true)
+                .message("Xác thực tài khoản thành công")
+                .build();
+
         Optional<TokenConfirm> tokenConfirmOptional = tokenConfirmRepository
                 .findByTokenAndType(token, TokenType.EMAIL_VERIFICATION);
-        if (tokenConfirmOptional.isEmpty()) {
-            data.put("success", false);
-            data.put("message", "Token xác thực tài khoản không hợp lệ");
-            return data;
+
+        if (tokenConfirmOptional.isPresent()) {
+            TokenConfirm tokenConfirm = tokenConfirmOptional.get();
+
+            // Kiểm tra nếu token đã được xác nhận
+            if (tokenConfirm.getConfirmedDate() != null) {
+                response.setSuccess(false);
+                response.setMessage("Token xác thực tài khoản đã được xác nhận");
+            }
+            // Kiểm tra nếu token đã hết hạn
+            else if (tokenConfirm.getExpiryDate().before(new Date())) {
+                response.setSuccess(false);
+                response.setMessage("Token xác thực tài khoản đã hết hạn");
+            }
+
+            // Xác thực tài khoản
+            User user = tokenConfirm.getUser();
+            user.setEnabled(true);
+            userRepository.save(user);
+
+            tokenConfirm.setConfirmedDate(new Date());
+            tokenConfirmRepository.save(tokenConfirm);
+        } else {
+            response.setSuccess(false);
+            response.setMessage("Token xác thực tài khoản không hợp lệ");
         }
 
-        TokenConfirm tokenConfirm = tokenConfirmOptional.get();
-        if (tokenConfirm.getConfirmedDate() != null) {
-            data.put("success", false);
-            data.put("message", "Token xác thực tài khoản đã được xác nhận");
-            return data;
-        }
-
-        if (tokenConfirm.getExpiryDate().before(new Date())) {
-            data.put("success", false);
-            data.put("message", "Token xác thực tài khoản đã hết hạn");
-            return data;
-        }
-
-        User user = tokenConfirm.getUser();
-        user.setEnabled(true);
-        userRepository.save(user);
-
-        tokenConfirm.setConfirmedDate(new Date());
-        tokenConfirmRepository.save(tokenConfirm);
-
-        data.put("success", true);
-        data.put("message", "Xác thực tài khoản thành công");
-        return data;
+        return response;
     }
 
     public void forgotPassword(String email) {
@@ -215,33 +220,34 @@ public class AuthService {
     }
 
     @Transactional
-    public Map<String, Object> confirmResetPassword(String token) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("token", token);
+    public VerifyTokenResponse checkForgotPasswordToken(String token) {
+        VerifyTokenResponse response = VerifyTokenResponse.builder()
+                .token(token)
+                .success(true)
+                .message("Token đặt lại mật khẩu hợp lệ")
+                .build();
 
         Optional<TokenConfirm> tokenConfirmOptional = tokenConfirmRepository
                 .findByTokenAndType(token, TokenType.PASSWORD_RESET);
-        if (tokenConfirmOptional.isEmpty()) {
-            data.put("success", false);
-            data.put("message", "Token đặt lại mật khẩu không hợp lệ");
-            return data;
+
+        if (tokenConfirmOptional.isPresent()) {
+            TokenConfirm tokenConfirm = tokenConfirmOptional.get();
+
+            // Kiểm tra nếu token đã được xác nhận
+            if (tokenConfirm.getConfirmedDate() != null) {
+                response.setSuccess(false);
+                response.setMessage("Token đặt lại mật khẩu đã được xác nhận");
+            }
+            // Kiểm tra nếu token đã hết hạn
+            else if (tokenConfirm.getExpiryDate().before(new Date())) {
+                response.setSuccess(false);
+                response.setMessage("Token đặt lại mật khẩu đã hết hạn");
+            }
+        } else {
+            response.setSuccess(false);
+            response.setMessage("Token đặt lại mật khẩu không hợp lệ");
         }
 
-        TokenConfirm tokenConfirm = tokenConfirmOptional.get();
-        if (tokenConfirm.getConfirmedDate() != null) {
-            data.put("success", false);
-            data.put("message", "Token đặt lại mật khẩu đã được xác nhận");
-            return data;
-        }
-
-        if (tokenConfirm.getExpiryDate().before(new Date())) {
-            data.put("success", false);
-            data.put("message", "Token đặt lại mật khẩu đã hết hạn");
-            return data;
-        }
-
-        data.put("success", true);
-        data.put("message", "Token đặt lại mật khẩu hợp lệ");
-        return data;
+        return response;
     }
 }

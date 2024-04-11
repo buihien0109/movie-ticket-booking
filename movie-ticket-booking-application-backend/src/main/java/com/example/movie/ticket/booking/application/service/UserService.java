@@ -13,6 +13,7 @@ import com.example.movie.ticket.booking.application.model.response.ImageResponse
 import com.example.movie.ticket.booking.application.repository.ImageRepository;
 import com.example.movie.ticket.booking.application.repository.UserRepository;
 import com.example.movie.ticket.booking.application.security.SecurityUtils;
+import com.example.movie.ticket.booking.application.utils.FileUtils;
 import com.example.movie.ticket.booking.application.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +99,9 @@ public class UserService {
 
     public ImageResponse updateAvatar(MultipartFile file) {
         User user = SecurityUtils.getCurrentUserLogin();
+
+        FileUtils.deleteFileByURL(user.getAvatar());
+
         ImageResponse imageResponse = imageService.uploadImage(file);
         user.setAvatar(imageResponse.getUrl());
         userRepository.save(user);

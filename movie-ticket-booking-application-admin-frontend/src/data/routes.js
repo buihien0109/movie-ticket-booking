@@ -28,6 +28,107 @@ const menu = [
         ],
     },
     {
+        id: 7,
+        label: "Quản lý rạp phim",
+        icon: RobotOutlined,
+        url: "/admin/cinemas",
+        subs: [
+            {
+                id: 71,
+                label: "Danh sách rạp phim",
+                url: "/admin/cinemas",
+            },
+            {
+                id: 72,
+                label: "Tạo rạp phim",
+                url: "/admin/cinemas/create",
+            },
+        ],
+    },
+    {
+        id: 8,
+        label: "Quản lý phim",
+        icon: TabletOutlined,
+        url: "/admin/movies",
+        subs: [
+            {
+                id: 81,
+                label: "Danh sách phim",
+                url: "/admin/movies",
+            },
+            {
+                id: 82,
+                label: "Tạo phim",
+                url: "/admin/movies/create",
+            },
+        ],
+    },
+    {
+        id: 9,
+        label: "Quản lý lịch chiếu",
+        icon: BulbOutlined,
+        url: "/admin/schedules",
+        subs: [
+            {
+                id: 91,
+                label: "Danh sách lịch chiếu",
+                url: "/admin/schedules",
+            },
+        ],
+    },
+    {
+        id: 100,
+        label: "Quản lý suất chiếu",
+        icon: CopyrightOutlined,
+        url: "/admin/showtimes",
+        subs: [
+            {
+                id: 1002,
+                label: "Danh sách suất chiếu",
+                url: "/admin/showtimes",
+            },
+        ],
+    },
+    {
+        id: 400,
+        label: "Quản lý đơn hàng",
+        icon: CarOutlined,
+        url: "/admin/orders",
+        subs: [
+            {
+                id: 4001,
+                label: "Danh sách đơn hàng",
+                url: "/admin/orders",
+            }
+        ],
+    },
+    {
+        id: 200,
+        label: "Quản lý giá vé",
+        icon: CalculatorOutlined,
+        url: "/admin/ticket-prices",
+        subs: [
+            {
+                id: 2001,
+                label: "Giá vé cơ bản",
+                url: "/admin/ticket-prices/base-price",
+            }
+        ],
+    },
+    {
+        id: 300,
+        label: "Quản lý khuyến mại",
+        icon: CarOutlined,
+        url: "/admin/coupons",
+        subs: [
+            {
+                id: 3001,
+                label: "Danh sách khuyến mại",
+                url: "/admin/coupons",
+            }
+        ],
+    },
+    {
         id: 2,
         label: "Quản lý bài viết",
         icon: FileTextOutlined,
@@ -110,107 +211,6 @@ const menu = [
                 label: "Tạo combo-nước",
                 url: "/admin/additional-services/create",
             },
-        ],
-    },
-    {
-        id: 7,
-        label: "Quản lý rạp phim",
-        icon: RobotOutlined,
-        url: "/admin/cinemas",
-        subs: [
-            {
-                id: 71,
-                label: "Danh sách rạp phim",
-                url: "/admin/cinemas",
-            },
-            {
-                id: 72,
-                label: "Tạo rạp phim",
-                url: "/admin/cinemas/create",
-            },
-        ],
-    },
-    {
-        id: 8,
-        label: "Quản lý phim",
-        icon: TabletOutlined,
-        url: "/admin/movies",
-        subs: [
-            {
-                id: 81,
-                label: "Danh sách phim",
-                url: "/admin/movies",
-            },
-            {
-                id: 82,
-                label: "Tạo phim",
-                url: "/admin/movies/create",
-            },
-        ],
-    },
-    {
-        id: 9,
-        label: "Quản lý lịch chiếu",
-        icon: BulbOutlined,
-        url: "/admin/schedules",
-        subs: [
-            {
-                id: 91,
-                label: "Danh sách lịch chiếu",
-                url: "/admin/schedules",
-            },
-        ],
-    },
-    {
-        id: 100,
-        label: "Quản lý suất chiếu",
-        icon: CopyrightOutlined,
-        url: "/admin/showtimes",
-        subs: [
-            {
-                id: 1002,
-                label: "Danh sách suất chiếu",
-                url: "/admin/showtimes",
-            },
-        ],
-    },
-    {
-        id: 200,
-        label: "Quản lý giá vé",
-        icon: CalculatorOutlined,
-        url: "/admin/ticket-prices",
-        subs: [
-            {
-                id: 2001,
-                label: "Giá vé cơ bản",
-                url: "/admin/ticket-prices/base-price",
-            }
-        ],
-    },
-    {
-        id: 300,
-        label: "Quản lý khuyến mại",
-        icon: CarOutlined,
-        url: "/admin/coupons",
-        subs: [
-            {
-                id: 3001,
-                label: "Danh sách khuyến mại",
-                url: "/admin/coupons",
-            }
-        ],
-    },
-    {
-        id: 400,
-        label: "Quản lý đơn hàng",
-        icon: CarOutlined,
-        url: "/admin/orders",
-        subs: [
-            {
-                id: 4001,
-                label: "Danh sách đơn hàng",
-                url: "/admin/orders",
-            }
         ],
     },
 ];

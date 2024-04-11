@@ -1,6 +1,8 @@
 import React from 'react';
-import ModalBase from '../../../../components/modal-trailer/ModalBase';
+import { useNavigate } from 'react-router-dom';
+import { useCreateOrderMutation } from '../../../../app/services/order.api';
 import { formatCurrency, formatDate, formatMovieAge } from '../../../../utils/functionUtils';
+import ModalBase from '../../../../components/modal/base/ModalBase';
 
 const parseGraphicsType = (type) => {
     switch (type) {
@@ -25,16 +27,41 @@ const parseTranslationType = (type) => {
 }
 
 function ModalOrder(props) {
+    const navigate = useNavigate()
     const { open, handleOpen, zIndex, schedule, showtimes, selectedSeats, totalPriceSeat, selectedServices, totalPriceService } = props
     const { cinema, movie } = schedule
+    const [createOrder, { isLoading }] = useCreateOrderMutation()
+
+    const handlePayment = () => {
+        const order = {
+            showtimeId: showtimes.id,
+            ticketItems: selectedSeats.map(seat => ({
+                seatId: seat.id,
+                price: seat.price
+            })),
+            serviceItems: selectedServices.map(service => ({
+                additionalServiceId: service.id,
+                quantity: service.count,
+                price: service.price
+            }))
+        }
+        createOrder(order).unwrap()
+            .then((res) => {
+                window.location.href = res.url
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
     const totalPrice = totalPriceSeat + totalPriceService
     return (
         <>
-            <ModalBase isOpen={open} onClose={handleOpen} size="md" zIndex={zIndex}>
+            <ModalBase isOpen={open} onClose={handleOpen} size="sm" zIndex={zIndex} style={{ width: "600px" }}>
                 <div className="flex h-full flex-col bg-white overflow-auto rounded-md p-0">
                     <div className="modal-body h-full overflow-auto rounded bg-white p-0">
                         <div className="flex flex-col md:flex-row">
-                            <div className="order-2 mx-auto basis-1/2 px-6 py-5 md:order-1">
+                            <div className="order-2 mx-auto grow px-6 py-5 md:order-1">
                                 <div>
                                     <ul className="flex items-center space-x-2">
                                         <li className="origin-left scale-90">
@@ -116,14 +143,24 @@ function ModalOrder(props) {
                                     </li>
                                 </ul>
                                 <div className="mt-2 text-xs italic leading-normal text-gray-500">Ưu đãi (nếu có) sẽ được áp dụng ở bước thanh toán.</div>
-                            </div>
-                            <div
-                                className="order-1 flex basis-1/2 items-center justify-center md:order-2"
-                                style={{ background: `url('https://homepage.momocdn.net/jk/momo2020/img/intro/qrcode-pattern.png') 10px 10px no-repeat, linear-gradient(to top, rgb(193, 23, 124), rgb(225, 27, 144))` }}
-                            >
-                                <div className="px-8 py-9 text-center">
-                                    <h4 className="mb-5 text-base text-white">Quét mã QR bằng MoMo để thanh toán</h4>
 
+                                <div className="mt-4">
+                                    <button
+                                        onClick={handlePayment}
+                                        type="button"
+                                        className="relative mx-auto !flex items-center justify-center btn-primary h-12 w-full !px-8 !text-md hover:bg-pink-500 bg-pink-600 text-white rounded-lg font-bold"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? (
+                                            <span className="animate-spin inline-block mr-2">
+                                                <svg className="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                            </span>
+                                        ) : null}
+                                        Tiến hành thanh toán
+                                    </button>
                                 </div>
                             </div>
                         </div>

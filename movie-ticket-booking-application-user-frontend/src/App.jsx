@@ -8,17 +8,20 @@ import BlogPhimChieuRap from "./pages/blog/BlogPhimChieuRap";
 import BlogPhimNetflix from "./pages/blog/BlogPhimNetflix";
 import BlogTongHopPhim from "./pages/blog/BlogTongHopPhim";
 import Home from "./pages/home/Home";
-import MovieShow from "./pages/movie/ movie-show/ MovieShow";
+import MovieShow from "./pages/movie/movie-show/ MovieShow";
 import MovieComingSoon from "./pages/movie/coming-soon/MovieComingSoon";
 import MovieDetail from "./pages/movie/movie-detail/MovieDetail";
 import MovieShowingNow from "./pages/movie/showing-now/MovieShowingNow";
 import Showtimes from "./pages/movie/showtimes/Showtimes";
-import MovieReviewDetail from "./pages/review/movie-review-detail/MovieReviewDetail";
+import PaymentResult from "./pages/payment/PaymentResult";
 import MovieReview from "./pages/review/movie-review/MovieReview";
+import ConfirmForgotPassword from "./pages/user/ConfirmForgotPassword";
 import UserLayout from "./pages/user/UserLayout";
 import History from "./pages/user/history/History";
 import Password from "./pages/user/password/Password";
 import Profile from "./pages/user/profile/Profile";
+import ConfirmRegistration from "./pages/user/ConfirmRegistration";
+import MovieReviewDetail from "./pages/review/movie-review-detail/MovieReviewDetail";
 
 function App() {
     return (
@@ -39,6 +42,8 @@ function App() {
                     <Route path="tong-hop-phim" element={<BlogTongHopPhim />} />
                     <Route path=":blogId/:blogSlug" element={<BlogDetail />} />
                 </Route>
+                <Route path="dat-lai-mat-khau" element={<ConfirmForgotPassword />} />
+                <Route path="xac-thuc-tai-khoan" element={<ConfirmRegistration />} />
 
                 <Route element={<PrivateRoutes />}>
                     <Route path="khach-hang" element={<UserLayout />}>
@@ -46,6 +51,7 @@ function App() {
                         <Route path="doi-mat-khau" element={<Password />} />
                         <Route path="lich-su-mua-ve" element={<History />} />
                     </Route>
+                    <Route path="thanh-toan-don-hang/:orderId" element={<PaymentResult />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
             </Route>

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import ModalDeleteReview from '../../../components/modal-review/ModalDeleteReview';
-import ModalUpdateReview from '../../../components/modal-review/ModalUpdateReview';
-import useModal from '../../../components/modal-trailer/useModal';
+import useModal from '../../../components/modal/hook/useModal';
+import ModalDeleteReview from '../../../components/modal/review/ModalDeleteReview';
+import ModalUpdateReview from '../../../components/modal/review/ModalUpdateReview';
 import { formatDate, parseReviewMessage } from '../../../utils/functionUtils';
 
 function UserAvatar({ user, date }) {
@@ -31,7 +31,7 @@ function ReviewRating({ rating }) {
 }
 
 
-function ReviewItem({ review, movieId }) {
+function ReviewItem({ review, movieId, onSetPage }) {
     const { open: openModalDelete, handleOpen: handleOpenDelete } = useModal();
     const { open: openModalUpdate, handleOpen: handleOpenUpdate } = useModal();
     const { auth } = useSelector(state => state.auth)
@@ -43,6 +43,35 @@ function ReviewItem({ review, movieId }) {
                 <div className="relative mt-3">
                     <ReviewRating rating={review.rating} />
                     <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-gray-900">{review.comment}</p>
+
+                    {review.feeling && review.feeling.length > 0 && (
+                        <div className="scroll-hidden mt-4 flex w-full items-center space-x-2 overflow-x-auto">
+                            {review.feeling.map((feeling, index) => (
+                                <span key={index} className="block whitespace-nowrap rounded bg-blue-50 px-2 py-1 text-sm leading-4 text-gray-800">
+                                    {feeling}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+
+                    {review.images && review.images.length > 0 && (
+                        <div className="relative mt-4 w-full">
+                            <div className="gap-0.5 rounded-xl md:grid-cols-4 md:gap-2 md:rounded-none grid grid-cols-1 grid-rows-1 overflow-hidden">
+                                {review.images.map((image, index) => (
+                                    <div key={index} className="aspect-w-4 relative cursor-pointer overflow-hidden md:aspect-w-4 md:aspect-h-3 md:rounded aspect-h-3">
+                                        <img
+                                            alt="Ảnh review"
+                                            src={image}
+                                            className="w-full h-full object-cover"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="order-1 col-span-12 md:order-2 md:col-span-6 lg:col-span-8"><div className="relative z-[1] -mx-5 md:mx-0"></div></div>
 
                     {auth && auth.id === review.user.id && (
                         <div className="mt-3 flex items-center">
@@ -63,6 +92,7 @@ function ReviewItem({ review, movieId }) {
                     open={openModalDelete}
                     handleClose={handleOpenDelete}
                     reviewId={review.id}
+                    onSetPage={onSetPage}
                 />
             )}
 
@@ -72,6 +102,7 @@ function ReviewItem({ review, movieId }) {
                     handleClose={handleOpenUpdate}
                     review={review}
                     movieId={movieId}
+                    onSetPage={onSetPage}
                 />
             )}
         </>

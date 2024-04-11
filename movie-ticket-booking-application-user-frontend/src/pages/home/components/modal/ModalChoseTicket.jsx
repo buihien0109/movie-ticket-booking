@@ -4,12 +4,12 @@ import { useGetSeatsByAuditoriumQuery } from '../../../../app/services/auditoriu
 import { useBookReservationMutation, useCancelReservationMutation } from '../../../../app/services/reservation.api';
 import Error from '../../../../components/error/Error';
 import LoadingInside from '../../../../components/loading/LoadingInside';
-import ModalBase from '../../../../components/modal-trailer/ModalBase';
-import useModal from '../../../../components/modal-trailer/useModal';
 import { useWebSocket } from '../../../../contexts/WebSocketProvider';
 import { createLabel, formatCurrency, formatDateToDDMM, formatMovieAge, getDayOfWeek } from '../../../../utils/functionUtils';
 import Seat from '../seat/Seat';
 import ModalChoseAdditionalService from './ModalChoseAdditionalService';
+import useModal from '../../../../components/modal/hook/useModal';
+import ModalBase from '../../../../components/modal/base/ModalBase';
 
 function ModalChoseTicket({ schedule, showtimes, open, handleOpen }) {
     const { stompClient, isConnected } = useWebSocket();
@@ -163,7 +163,7 @@ function ModalChoseTicket({ schedule, showtimes, open, handleOpen }) {
     const totalPrice = selectedSeats.reduce((acc, seat) => acc + seat.price, 0);
     return (
         <>
-            <ModalBase isOpen={open} onClose={handleOpen} size="md">
+            <ModalBase isOpen={open} onClose={handleOpen} size="md" style={{ width: "1000px" }}>
                 <div className="flex h-full flex-col bg-black overflow-auto rounded-md p-0">
                     <div className="relative flex shrink-0 items-center bg-pink-600 px-4 py-3">
                         <svg onClick={handleOpen} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="absolute left-3 h-6 shrink-0 cursor-pointer text-white transition-all hover:opacity-70"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path></svg>

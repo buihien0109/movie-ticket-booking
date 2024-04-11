@@ -16,4 +16,6 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
     List<SeatReservation> findByShowtime_Id(Integer showtimeId);
 
     Optional<SeatReservation> findBySeat_IdAndShowtime_IdAndStatus(Integer seatId, Integer showtimeId, SeatReservationStatus seatReservationStatus);
+
+    Optional<SeatReservation> findBySeat_IdAndShowtime_Id(Integer seatId, Integer showtimeId);
 }

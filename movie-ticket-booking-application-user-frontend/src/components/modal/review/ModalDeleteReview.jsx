@@ -1,9 +1,9 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import { useDeleteReviewMutation } from '../../app/services/review.api';
-import ModalBase from '../modal-trailer/ModalBase';
+import { useDeleteReviewMutation } from '../../../app/services/review.api';
+import ModalBase from '../base/ModalBase';
 
-function ModalDeleteReview({ open, handleClose, reviewId }) {
+function ModalDeleteReview({ open, handleClose, reviewId, onSetPage }) {
     const [deleteReview, { isLoading }] = useDeleteReviewMutation();
 
     const handleDeleteReview = (reviewId) => {
@@ -11,6 +11,7 @@ function ModalDeleteReview({ open, handleClose, reviewId }) {
             .unwrap()
             .then(() => {
                 toast.success("Xóa bình luận thành công");
+                onSetPage(1)
                 handleClose();
             })
             .catch((error) => {
@@ -18,7 +19,7 @@ function ModalDeleteReview({ open, handleClose, reviewId }) {
             });
     }
     return (
-        <ModalBase isOpen={open} onClose={handleClose} size="sm">
+        <ModalBase isOpen={open} onClose={handleClose} size="sm" style={{ width: "500px" }}>
             <div className="p-6 space-y-4 md:space-y-5 sm:p-8">
                 <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Xác nhận xóa bình luận</h1>
                 <p className="text-gray-800">Bạn có chắc chắn muốn xóa bình luận này?</p>

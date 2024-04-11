@@ -7,11 +7,17 @@ import com.example.movie.ticket.booking.application.exception.ResourceNotFoundEx
 import com.example.movie.ticket.booking.application.model.response.ImageResponse;
 import com.example.movie.ticket.booking.application.repository.ImageRepository;
 import com.example.movie.ticket.booking.application.security.SecurityUtils;
+import com.example.movie.ticket.booking.application.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -89,6 +95,38 @@ public class ImageService {
         }
     }
 
+    public ImageResponse uploadImage(byte[] data) {
+        String imageId = UUID.randomUUID().toString();
+        Path rootPath = Paths.get(uploadDir);
+        Path filePath = rootPath.resolve(imageId);
+
+        try {
+            Files.write(filePath, data);
+
+            // Tính toán kích thước file theo MB
+            double sizeInMB = BigDecimal.valueOf(data.length / 1024.0 / 1024.0)
+                    .setScale(2, RoundingMode.HALF_UP)
+                    .doubleValue();
+            Image image = Image.builder()
+                    .id(imageId)
+                    .type("image/png")
+                    .size(sizeInMB)
+                    .build();
+
+            imageRepository.save(image);
+
+            String url = "/api/public/images/" + image.getId();
+            return ImageResponse.builder()
+                    .id(imageId)
+                    .url(url)
+                    .build();
+        } catch (IOException e) {
+            log.error("Cannot upload file: " + filePath);
+            log.error(e.getMessage());
+            throw new RuntimeException("Cannot upload file: " + filePath);
+        }
+    }
+
     private void validateFile(MultipartFile file) {
         // Kiểm tra tên file
         String fileName = file.getOriginalFilename();
@@ -125,6 +163,7 @@ public class ImageService {
         return Math.round((double) sizeInBytes / (1024 * 1024) * 100) / 100.0;
     }
 
+    @Transactional
     public void deleteImage(String id) {
         User user = SecurityUtils.getCurrentUserLogin();
 
@@ -135,7 +174,11 @@ public class ImageService {
             throw new BadRequestException("Bạn không có quyền xóa image này");
         }
 
+        // Xóa file trong database
         imageRepository.delete(image);
+
+        // Xóa file trong thư mục
+        FileUtils.deleteFile(id);
     }
 
     public byte[] getImageData(Image image) {
@@ -145,9 +188,24 @@ public class ImageService {
         try {
             return Files.readAllBytes(filePath);
         } catch (IOException e) {
-            log.error("Cannot read file: " + filePath);
+            log.error("Cannot read file: {}", filePath);
             log.error(e.getMessage());
             throw new RuntimeException("Cannot read file: " + filePath);
+        }
+    }
+
+    public Resource loadImageAsResource(String id) {
+        try {
+            Path rootPath = Paths.get(uploadDir);
+            Path filePath = rootPath.resolve(id);
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("The file " + id + " doesn't exist or not readable");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Could not read the file: " + id, e);
         }
     }
 }

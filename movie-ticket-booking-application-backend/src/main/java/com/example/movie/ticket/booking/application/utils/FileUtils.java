@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 
 @Slf4j
 public class FileUtils {
+    private static final String uploadDir = "image_uploads";
+
     public static void createDirectory(String name) {
         Path path = Paths.get(name);
         if (!Files.exists(path)) {
@@ -22,17 +24,26 @@ public class FileUtils {
         }
     }
 
-    public static void deleteFile(String filePath) {
-        log.info("Xóa file: " + filePath);
-        // filePath: /image_uploads/123456789
-        filePath = filePath.substring(1);
-        Path path = Paths.get(filePath);
+    public static void deleteFile(String id) {
+        log.info("Xóa file: {}", id);
+        Path rootPath = Paths.get(uploadDir);
+        Path filePath = rootPath.resolve(id);
+
         try {
-            Files.deleteIfExists(path);
+            Files.delete(filePath);
         } catch (IOException e) {
-            log.error("Không thể xóa file");
+            log.error("Không thể xóa file: {}", id);
             log.error(e.getMessage());
-            throw new RuntimeException("Could not delete file");
+            throw new RuntimeException("Could not delete file: " + id);
         }
+    }
+
+    // URL: /api/public/images/{id}. id is the name of the file in the image_uploads directory.
+    public static void deleteFileByURL(String url) {
+        if (url == null || !url.startsWith("/api/public/images/")) {
+            return;
+        }
+        String id = url.substring(url.lastIndexOf("/") + 1);
+        deleteFile(id);
     }
 }

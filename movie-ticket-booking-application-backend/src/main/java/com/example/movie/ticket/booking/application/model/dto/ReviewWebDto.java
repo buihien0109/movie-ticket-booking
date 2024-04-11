@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +15,7 @@ public class ReviewWebDto {
     Integer id;
     String comment;
     Integer rating;
+    List<String> feeling;
     Date createdAt;
     Date updatedAt;
     AuthorReviewDto user;

@@ -62,18 +62,11 @@ public class ActorService {
         Actor existingActor = actorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy diễn viên có id = " + id));
 
-        // Kiểm tra xem diễn viên có đang áp dụng cho phim nào không. Nếu count > 0 thì không được xóa -> throw exception
         long count = movieRepository.countByActors_Id(id);
         if (count > 0) {
             throw new BadRequestException("Không thể xóa diễn viên này vì đang áp dụng cho phim");
         }
 
-        // Kiểm tra xem diễn viên có avatar không. Nếu có thì xóa file avatar
-        if (existingActor.getAvatar() != null) {
-            FileUtils.deleteFile(existingActor.getAvatar());
-        }
-
-        // Xóa diễn viên
         actorRepository.deleteById(id);
     }
 }

@@ -4,6 +4,8 @@ import com.example.movie.ticket.booking.application.entity.Image;
 import com.example.movie.ticket.booking.application.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,15 @@ public class ImageController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(image.getType()))
                 .body(imageService.getImageData(image));
+    }
+
+    @GetMapping("/public/images/{id}/download")
+    public ResponseEntity<Resource> downloadImage(@PathVariable String id) {
+        Resource file = imageService.loadImageAsResource(id);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                .body(file);
     }
 
     @GetMapping("/admin/images")

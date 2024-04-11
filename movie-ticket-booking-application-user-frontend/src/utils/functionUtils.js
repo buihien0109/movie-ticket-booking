@@ -1,3 +1,5 @@
+import { DOMAIN } from "../data/constants";
+
 // Format date
 export const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -77,27 +79,44 @@ export const formatMovieAge = (age) => {
 export const parseReviewMessage = (rating) => {
     switch (rating) {
         case 1:
-            return "Không thích";
         case 2:
-            return "Rất tệ";
+            return "Kén người mê";
         case 3:
-            return "Tệ";
         case 4:
-            return "Dưới trung bình";
+            return "Chưa ưng lắm";
         case 5:
-            return "Trung bình";
         case 6:
-            return "Khá ổn";
+            return "Tạm ổn";
         case 7:
-            return "Tốt";
         case 8:
-            return "Rất tốt";
+            return "Đáng xem";
         case 9:
-            return "Tuyệt vời";
         case 10:
-            return "Xuất sắc";
+            return "Cực phẩm";
         default:
             return "";
+    }
+}
+
+export const getReviewFeelings = (rating) => {
+    switch (rating) {
+        case 1:
+        case 2:
+            return ["Thất vọng", "Thiếu chiều sâu", "Dài dòng", "Buồn ngủ", "Khó hiểu", "Không điểm nhấn", "Nhạt", "Phí tiền"];
+        case 3:
+        case 4:
+            return ["Dài dòng", "Bình thường", "Chưa đặc sắc", "Cũng được", "Chưa hay"];
+        case 5:
+        case 6:
+            return ["Cũng tạm", "Bình thường", "Không hay không dở", "Hài lòng"];
+        case 7:
+        case 8:
+            return ["Nhân văn", "Mãn nhãn", "Hồi hộp", "Ý nghĩa", "Lôi cuốn", "Đáng xem", "Đồng cảm", "Kịch tính", "Ổn áp", "Đáng tiền"];
+        case 9:
+        case 10:
+            return ["Đáng xem", "Cười banh rạp", "Kịch tính", "Cảm động", "Hài hước", "Siêu phẩm", "Hài lòng", "Khóc trôi rạp", "Giải trí", "Tuyệt vời"];
+        default:
+            return [];
     }
 }
 
@@ -167,10 +186,21 @@ export const groupShowtimes = (showtimesInput) => {
     return result;
 }
 
-export function createLabel(showtime) {
+export const createLabel = (showtime) => {
     let label = `${showtime.graphicsType} ${showtime.translationType}`;
     if (showtime.auditorium.type !== 'STANDARD') {
         label += ` | ${showtime.auditorium.type}`;
     }
-    return label.replace('_2D', '2D').replace('_3D', '3D').replace('SUBTITLING', 'Phụ đề').replace('DUBBING', 'Lồng tiếng');
+    return label
+        .replace('_2D', '2D')
+        .replace('_3D', '3D')
+        .replace('SUBTITLING', 'Phụ đề')
+        .replace('DUBBING', 'Lồng tiếng');
+}
+
+export const prepareImageURL = (url) => {
+    if(url.startsWith(DOMAIN)) {
+        return url.substring(DOMAIN.length);
+    }
+    return url;
 }
