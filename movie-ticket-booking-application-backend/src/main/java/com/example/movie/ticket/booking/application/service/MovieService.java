@@ -16,6 +16,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -160,6 +164,20 @@ public class MovieService {
     public List<Movie> getAllMoviesInSchedule() {
         // Lấy danh sách movie trong schedule đang có lịch chiếu hoặc sắp chiếu
         List<Schedule> schedules = scheduleRepository.findByMovie_StatusAndEndDateAfter(true, new Date());
+        return schedules.stream().map(Schedule::getMovie).toList();
+    }
+
+    public List<Movie> getAllMoviesInSchedule(String dateStr) {
+        log.info("Get all movies in schedule by date = {}", dateStr);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = null;
+        try {
+            date = sdf.parse(dateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        // Lấy danh sách movie trong schedule đang có lịch chiếu hoặc sắp chiếu
+        List<Schedule> schedules = scheduleRepository.findByMovie_StatusAndEndDateAfter(true, date);
         return schedules.stream().map(Schedule::getMovie).toList();
     }
 }

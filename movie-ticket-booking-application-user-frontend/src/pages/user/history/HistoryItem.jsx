@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { formatCurrency, formatDate, formatMovieAge } from '../../../utils/functionUtils';
-import useModal from '../../../components/modal/hook/useModal';
 import ModalBase from '../../../components/modal/base/ModalBase';
+import useModal from '../../../components/modal/hook/useModal';
+import { formatCurrency, formatDate, formatMovieAge } from '../../../utils/functionUtils';
 
 const parseGraphicsType = (type) => {
     switch (type) {
@@ -133,6 +133,18 @@ function HistoryItem({ order }) {
                                     <li className="flex items-end justify-between space-x-10">
                                         <div>
                                             <div className="text-gray-800"><b>Tạm tính</b></div>
+                                        </div>
+                                        <div className="text-gray-800"><b>{formatCurrency(order.tempPrice)}đ</b></div>
+                                    </li>
+                                    <li className="flex items-end justify-between space-x-10">
+                                        <div>
+                                            <div className="text-gray-800"><b>Giảm giá {order.discount ? `(${order.discount}%)` : ""}</b></div>
+                                        </div>
+                                        <div className="text-gray-800"><b>{formatCurrency(order.discountPrice)}đ</b></div>
+                                    </li>
+                                    <li className="flex items-end justify-between space-x-10">
+                                        <div>
+                                            <div className="text-gray-800"><b>Thành tiền</b></div>
                                         </div>
                                         <div className="text-gray-800"><b>{formatCurrency(order.totalPrice)}đ</b></div>
                                     </li>

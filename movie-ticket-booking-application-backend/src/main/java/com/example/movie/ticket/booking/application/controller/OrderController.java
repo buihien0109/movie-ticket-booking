@@ -53,7 +53,7 @@ public class OrderController {
 
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .header("Location", "http://127.0.0.1:5174/thanh-toan-don-hang/" + orderInfo)
+                .header("Location", "http://127.0.0.1:5173/thanh-toan-don-hang/" + orderInfo)
                 .build();
     }
 

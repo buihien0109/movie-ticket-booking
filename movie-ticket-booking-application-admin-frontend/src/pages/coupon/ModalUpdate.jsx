@@ -9,7 +9,7 @@ const ModalUpdate = (props) => {
     const [updateCoupon, { isLoading }] = useUpdateCouponMutation();
 
     const onFinish = (values) => {
-        updateCoupon({ id: coupon.id, name: values.name })
+        updateCoupon({ id: coupon.id, ...values })
             .unwrap()
             .then((data) => {
                 message.success("Cập nhật khuyến mại thành công!");

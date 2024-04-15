@@ -22,8 +22,18 @@ const menu = [
         subs: [
             {
                 id: 11,
-                label: "Dashboard",
+                label: "Tổng quan",
                 url: "/admin/dashboard",
+            },
+            {
+                id: 12,
+                label: "Doanh thu theo phim",
+                url: "/admin/revenue/movie",
+            },
+            {
+                id: 13,
+                label: "Doanh thu theo rạp",
+                url: "/admin/revenue/cinema",
             },
         ],
     },

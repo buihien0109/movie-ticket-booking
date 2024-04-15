@@ -39,20 +39,24 @@ public class JwtCustomFilter extends OncePerRequestFilter {
 
         String jwtToken = authHeader.substring(7);
         log.info("JWT Token : {}", jwtToken);
-        String userEmail = jwtUtils.extractUsername(jwtToken);
 
-        if (userEmail != null) {
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
+        if (jwtUtils.validateToken(jwtToken)) {
+            String userEmail = jwtUtils.extractUsername(jwtToken);
+            if (userEmail != null) {
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
 
-            if (jwtUtils.isTokenValid(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                if (jwtUtils.isTokenValid(jwtToken, userDetails)) {
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
             }
+        } else {
+            log.error("Token is not valid");
         }
 
         filterChain.doFilter(request, response);

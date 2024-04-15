@@ -29,7 +29,15 @@ export const movieApi = createApi({
             providesTags: ["Movie"],
         }),
         getAllMoviesInSchedule: builder.query({
-            query: () => "movies/in-schedule",
+            query: (date) => {
+                return {
+                    url: "movies/in-schedule",
+                    method: "GET",
+                    params: {
+                        date: date,
+                    },
+                }
+            },
         }),
         getMovieById: builder.query({
             query: (movieId) => `movies/${movieId}`,

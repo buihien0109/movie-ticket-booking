@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
@@ -81,5 +83,13 @@ public class DateUtils {
 
     public static Date convertLocalDateToDate(LocalDate localDate) {
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    public static LocalDateTime atStartOfDay(LocalDate date) {
+        return LocalDateTime.of(date, LocalTime.MIDNIGHT);
+    }
+
+    public static LocalDateTime atEndOfDay(LocalDate date) {
+        return LocalDateTime.of(date, LocalTime.MAX);
     }
 }

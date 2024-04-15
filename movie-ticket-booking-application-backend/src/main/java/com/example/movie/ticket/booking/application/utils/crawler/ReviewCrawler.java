@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
 
+import javax.lang.model.element.Element;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -39,7 +40,7 @@ public class ReviewCrawler {
         WebDriver driver = new ChromeDriver();
         try {
             driver.get(url);
-            Thread.sleep(5000); // Wait for the dynamic content to load
+            Thread.sleep(4000); // Wait for the dynamic content to load
 
             // Find review elements using Selenium
             List<WebElement> reviewElements = driver.findElements(By.cssSelector(".relative.w-full.py-5"));
@@ -60,33 +61,55 @@ public class ReviewCrawler {
     }
 
     private List<Review> parseReview(WebDriver driver, List<WebElement> reviewElements, List<User> userList, Movie movie) {
+        Random random = new Random();
         List<Review> reviewList = new ArrayList<>();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
         for (WebElement reviewElement : reviewElements) {
-            int rating = 10;
-            if (isElementPresent(driver, reviewElement, ".h-5.w-5.text-yellow-400 + span")) {
-                WebElement ratingElement = reviewElement.findElement(By.cssSelector(".h-5.w-5.text-yellow-400 + span"));
-                log.info("Rating Element: {}", ratingElement);
-
-                rating = Integer.parseInt(ratingElement.getText().split("/")[0]);
-            }
+            // Random rating from 1 -> 10
+            int rating = random.nextInt(10) + 1;
+//            if (isElementPresent(driver, reviewElement, ".h-5.w-5.text-yellow-400 + span")) {
+//                WebElement ratingElement = reviewElement.findElement(By.cssSelector(".h-5.w-5.text-yellow-400 + span"));
+//                log.info("Rating Element: {}", ratingElement);
+//
+//                rating = Integer.parseInt(ratingElement.getText().split("/")[0]);
+//            }
 
             String createdAtString = reviewElement.findElement(By.cssSelector(".text-xs.text-gray-500")).getText();
             Date createdAt = null;
             try {
                 createdAt = formatter.parse(createdAtString);
             } catch (ParseException e) {
-                throw new RuntimeException(e);
+                createdAt = new Date();
             }
+            Date updatedAt = createdAt;
 
             String comment = reviewElement.findElement(By.cssSelector(".whitespace-pre-wrap.break-words.text-md.leading-relaxed.text-gray-900")).getText();
+
+            List<String> feelingList = new ArrayList<>();
+            List<WebElement> feelingElements = reviewElement.findElements(By.cssSelector(".block.whitespace-nowrap.rounded.bg-blue-50.px-2.py-1.text-sm.leading-4.text-gray-800"));
+            if(!feelingElements.isEmpty()) {
+                for (WebElement feelingElement : feelingElements) {
+                    feelingList.add(feelingElement.getText());
+                }
+            }
+
+            List<String> imageList = new ArrayList<>();
+            List<WebElement> imageElements = reviewElement.findElements(By.cssSelector("img.absolute.inset-0.object-cover"));
+            if(!imageElements.isEmpty()) {
+                for (WebElement imageElement : imageElements) {
+                    imageList.add(imageElement.getAttribute("src"));
+                }
+            }
 
             Review review = Review.builder()
                     .user(userList.get(new Random().nextInt(userList.size())))
                     .rating(rating)
                     .createdAt(createdAt)
+                    .updatedAt(updatedAt)
                     .comment(comment)
+                    .feeling(feelingList)
+                    .images(imageList)
                     .movie(movie)
                     .build();
 

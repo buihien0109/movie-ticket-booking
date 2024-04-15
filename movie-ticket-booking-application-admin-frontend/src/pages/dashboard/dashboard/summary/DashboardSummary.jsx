@@ -1,25 +1,25 @@
 import { Col, Row } from 'antd'
 import React from 'react'
-import { formatCurrency } from '../../../utils/functionUtils'
 import SummaryBox from './SummaryBox'
+import { formatCurrency } from '../../../../utils/functionUtils'
 
-function DashboardSummary({ countLatestBlogs, countLatestUsers, countLatestComments }) {
+function DashboardSummary({ revenueToday, countLatestUsers }) {
     return (
         <Row gutter={[16, 16]}>
             <Col span={6}>
                 <SummaryBox
                     title="Doanh thu trong ngày"
-                    content={formatCurrency(25000000)}
+                    content={formatCurrency(revenueToday)}
                     className="primary"
-                    link="/admin/users"
+                    link="#"
                 />
             </Col>
             <Col span={6}>
                 <SummaryBox
                     title="Khách hàng mới"
-                    content={30}
+                    content={countLatestUsers}
                     className="info"
-                    link="/admin/blogs"
+                    link="/admin/users"
                 />
             </Col>
             <Col span={6}>

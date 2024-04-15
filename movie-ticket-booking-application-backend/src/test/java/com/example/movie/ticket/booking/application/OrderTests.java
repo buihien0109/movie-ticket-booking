@@ -1,15 +1,16 @@
 package com.example.movie.ticket.booking.application;
 
 import com.example.movie.ticket.booking.application.entity.*;
-import com.example.movie.ticket.booking.application.exception.ResourceNotFoundException;
-import com.example.movie.ticket.booking.application.model.enums.*;
+import com.example.movie.ticket.booking.application.model.enums.DayType;
+import com.example.movie.ticket.booking.application.model.enums.OrderStatus;
+import com.example.movie.ticket.booking.application.model.enums.ScreeningTimeType;
+import com.example.movie.ticket.booking.application.model.enums.SeatReservationStatus;
 import com.example.movie.ticket.booking.application.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -46,12 +47,15 @@ public class OrderTests {
     @Autowired
     private ScheduleRepository scheduleRepository;
 
+    @Autowired
+    private SeatReservationRepository seatReservationRepository;
+
     @Test
     void save_orders() {
         Random random = new Random();
         List<User> users = userRepository.findAll();
         List<AdditionalService> additionalServices = additionalServiceRepository.findAll();
-        List<Showtime> showtimes = showtimeRepository.findByDateBetween(LocalDate.now().minusDays(2), LocalDate.now().plusDays(7));
+        List<Showtime> showtimes = showtimeRepository.findByDateBetween(LocalDate.now().plusDays(1), LocalDate.now().plusDays(10));
         List<BaseTicketPrice> baseTicketPrices = baseTicketPriceRepository.findAll();
 
         // Each user create 5 orders
@@ -82,6 +86,13 @@ public class OrderTests {
                 List<Seat> seats = seatRepository.findByAuditorium_Id(rdShowtime.getAuditorium().getId());
                 for (int j = 0; j < random.nextInt(3) + 1; j++) {
                     Seat seat = seats.get(random.nextInt(seats.size()));
+
+                    // Check if the seat is already reserved
+                    Optional<SeatReservation> optionalSeatReservation = seatReservationRepository.findBySeat_IdAndShowtime_Id(seat.getId(), rdShowtime.getId());
+                    if (optionalSeatReservation.isPresent()) {
+                        continue;
+                    }
+
                     Optional<BaseTicketPrice> matchedPrice = baseTicketPrices.stream().filter(price ->
                             price.getSeatType() == seat.getType() &&
                                     price.getGraphicsType() == rdShowtime.getGraphicsType() &&
@@ -96,6 +107,14 @@ public class OrderTests {
                             .order(newOrder)
                             .build();
                     orderTicketItemRepository.save(newOrderTicketItem);
+
+                    // Reserve seat
+                    SeatReservation seatReservation = SeatReservation.builder()
+                            .seat(seat)
+                            .showtime(rdShowtime)
+                            .status(SeatReservationStatus.BOOKED)
+                            .build();
+                    seatReservationRepository.save(seatReservation);
                 }
             }
         }

@@ -16,7 +16,6 @@ import CinemaDetail from "./pages/cinema/cinema-detail/CinemaDetail";
 import CinemaList from "./pages/cinema/cinema-list/CinemaList";
 import CountryList from "./pages/country/country-list/CountryList";
 import CouponList from "./pages/coupon/CouponList";
-import Dashboard from "./pages/dashboard/Dashboard";
 import GenreList from "./pages/genre/genre-list/GenreList";
 import Login from "./pages/login/Login";
 import MovieCreate from "./pages/movie/movie-create/MovieCreate";
@@ -30,6 +29,9 @@ import UserCreate from "./pages/user/user-create/UserCreate";
 import UserDetail from "./pages/user/user-detail/UserDetail";
 import UserList from "./pages/user/user-list/UserList";
 import OrderDetail from "./pages/order/order-detail/OrderDetail";
+import RevenueByMovie from "./pages/dashboard/revenue-movie/RevenueByMovie";
+import RevenueByCinema from "./pages/dashboard/revenue-cinema/RevenueByCinema";
+import Dashboard from "./pages/dashboard/dashboard/Dashboard";
 
 function App() {
     return (
@@ -38,6 +40,8 @@ function App() {
                 <Route element={<AuthorizeRoutes requireRoles={["ADMIN"]} />}>
                     <Route path="/admin" element={<AppLayout />}>
                         <Route path="dashboard" element={<Dashboard />}></Route>
+                        <Route path="revenue/movie" element={<RevenueByMovie />}></Route>
+                        <Route path="revenue/cinema" element={<RevenueByCinema />}></Route>
                         <Route path="blogs">
                             <Route index element={<BlogList />} />
                             <Route path="own-blogs" element={<OwnBlogList />} />

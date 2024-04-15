@@ -22,7 +22,7 @@ const App = () => {
 
     // Nếu đã login -> chuyển hướng sang trang homepage
     if (isAuthenticated) {
-        return <Navigate to={"/admin/blogs/own-blogs"} />;
+        return <Navigate to={"/admin/dashboard"} />;
     }
 
     const handleLogin = async (values) => {

@@ -1,9 +1,11 @@
 package com.example.movie.ticket.booking.application;
 
 import com.example.movie.ticket.booking.application.entity.Movie;
+import com.example.movie.ticket.booking.application.entity.Review;
 import com.example.movie.ticket.booking.application.model.enums.GraphicsType;
 import com.example.movie.ticket.booking.application.model.enums.TranslationType;
 import com.example.movie.ticket.booking.application.repository.MovieRepository;
+import com.example.movie.ticket.booking.application.repository.ReviewRepository;
 import com.example.movie.ticket.booking.application.service.MovieService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class MovieTests {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Test
     void search_movie() {
@@ -50,5 +55,18 @@ public class MovieTests {
 
             movieRepository.save(movie);
         });
+    }
+
+    @Test
+    void update_rating() {
+        movieRepository.findAll().forEach(this::updateRatingOfMovie);
+    }
+
+    private void updateRatingOfMovie(Movie movie) {
+        List<Review> reviews = reviewRepository.findByMovie_Id(movie.getId());
+        double rating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0);
+        rating = Math.round(rating * 10) / 10.0;
+        movie.setRating(rating);
+        movieRepository.save(movie);
     }
 }

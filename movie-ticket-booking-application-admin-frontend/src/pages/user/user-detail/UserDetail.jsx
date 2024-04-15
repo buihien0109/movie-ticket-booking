@@ -12,6 +12,7 @@ import {
     Select,
     Space,
     Spin,
+    Tabs,
     Upload,
     message,
     theme
@@ -26,12 +27,14 @@ import {
     useUploadImageMutation,
 } from "../../../app/services/images.service";
 import {
+    useGetOrdersByUserQuery,
     useGetUserByIdQuery,
     useResetPasswordMutation,
     useUpdateUserMutation,
 } from "../../../app/services/users.service";
 import AppBreadCrumb from "../../../components/layout/AppBreadCrumb";
 import { API_DOMAIN } from "../../../data/constants";
+import OrderListByUser from "./OrderListByUser";
 
 const UserDetail = () => {
     const {
@@ -42,6 +45,7 @@ const UserDetail = () => {
     const { userId } = useParams();
     const { data: user, isLoading: isFetchingUser } =
         useGetUserByIdQuery(userId);
+    const { data: orders, isLoading: isFetchingOrders } = useGetOrdersByUserQuery(userId);
     const { isLoading: isFetchingImages } =
         useGetImagesQuery();
     const images =
@@ -84,7 +88,7 @@ const UserDetail = () => {
         }
     }, [user, avatar]);
 
-    if (isFetchingUser || isFetchingImages) {
+    if (isFetchingUser || isFetchingImages || isFetchingOrders) {
         return <Spin size="large" fullscreen />;
     }
 
@@ -171,240 +175,248 @@ const UserDetail = () => {
                     borderRadius: borderRadiusLG,
                 }}
             >
-                <Space style={{ marginBottom: "1rem" }}>
-                    <RouterLink to="/admin/users">
-                        <Button type="default" icon={<LeftOutlined />}>
-                            Quay lại
-                        </Button>
-                    </RouterLink>
-                    <Button
-                        style={{ backgroundColor: "rgb(60, 141, 188)" }}
-                        type="primary"
-                        icon={<SaveOutlined />}
-                        onClick={handleUpdate}
-                        loading={isLoadingUpdateUser}
-                    >
-                        Cập nhật
-                    </Button>
-                    <Button
-                        style={{ backgroundColor: "rgb(243, 156, 18)" }}
-                        type="primary"
-                        icon={<RetweetOutlined />}
-                        onClick={handleResetPassword}
-                        loading={isLoadingResetPassword}
-                    >
-                        Reset mật khẩu
-                    </Button>
-                </Space>
-
-                <Form
-                    form={form}
-                    layout="vertical"
-                    autoComplete="off"
-                    initialValues={user}
-                >
-                    <Row>
-                        <Col span={12}>
-                            <Form.Item
-                                label="Họ tên"
-                                name="name"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Họ tên không được để trống!",
-                                    },
-                                ]}
-                            >
-                                <Input placeholder="Enter name" />
-                            </Form.Item>
-
-                            <Form.Item
-                                label="Email"
-                                name="email"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Email không được để trống!",
-                                    },
-                                    {
-                                        type: "email",
-                                        message: "Email không đúng định dạng!",
-                                    },
-                                ]}
-                            >
-                                <Input placeholder="Enter email" disabled />
-                            </Form.Item>
-
-                            <Form.Item
-                                label="Số điện thoại"
-                                name="phone"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Số điện thoại không được để trống!",
-                                    },
-                                    {
-                                        pattern: new RegExp(/^(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})$/),
-                                        message: 'Số điện thoại di động không hợp lệ!',
-                                    },
-                                ]}
-                            >
-                                <Input placeholder="Enter phone" />
-                            </Form.Item>
-
-                            <Form.Item
-                                label="Quyền"
-                                name="role"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Quyền không được để trống!",
-                                    },
-                                ]}
-                            >
-                                <Select
-                                    style={{ width: "100%" }}
-                                    showSearch
-                                    placeholder="Select a role"
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                                    options={[
-                                        { label: "ADMIN", value: "ADMIN" },
-                                        { label: "USER", value: "USER" },
-                                    ]}
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                label="Trạng thái"
-                                name="enabled"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message:
-                                            "Trạng thái tài khoản không được để trống!",
-                                    },
-                                ]}
-                            >
-                                <Select
-                                    style={{ width: "100%" }}
-                                    showSearch
-                                    placeholder="Select a enabled"
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                                    options={[
-                                        { label: "Kích hoạt", value: true },
-                                        { label: "Chưa kích hoạt", value: false },
-                                    ]}
-                                />
-                            </Form.Item>
-
-                            <Form.Item name="avatar">
-                                <Space direction="vertical">
-                                    <Avatar
-                                        src={<img src={avatar} alt="avatar" />}
-                                        size={180}
-                                    />
-                                    <Button
-                                        type="primary"
-                                        onClick={() => setIsModalOpen(true)}
-                                    >
-                                        Thay đổi ảnh đại diện
-                                    </Button>
-                                </Space>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </Form>
-
-                <Modal
-                    title="Chọn ảnh của bạn"
-                    open={isModalOpen}
-                    onCancel={() => {
-                        setIsModalOpen(false);
-                        setImageSelected(null);
-                    }}
-                    footer={null}
-                    width={1200}
-                    style={{ top: 20 }}
-                >
-                    <Flex justify="space-between" align="center">
-                        <Space direction="horizontal">
-                            <Upload
-                                maxCount={1}
-                                customRequest={handleUploadImage}
-                                showUploadList={false}
-                            >
-                                <Button
-                                    type="primary"
-                                    style={{
-                                        backgroundColor: "rgb(243, 156, 18)",
-                                    }}
-                                    loading={isLoadingUploadImage}
-                                >
-                                    Tải ảnh lên
+                <Tabs>
+                    <Tabs.TabPane tab="Thông tin phim" key={1}>
+                        <Space style={{ marginBottom: "1rem" }}>
+                            <RouterLink to="/admin/users">
+                                <Button type="default" icon={<LeftOutlined />}>
+                                    Quay lại
                                 </Button>
-                            </Upload>
-
+                            </RouterLink>
                             <Button
+                                style={{ backgroundColor: "rgb(60, 141, 188)" }}
                                 type="primary"
-                                disabled={!imageSelected}
-                                onClick={() => {
-                                    setAvatar(imageSelected);
-                                    setIsModalOpen(false);
-                                    form.setFieldsValue({
-                                        avatar: imageSelected.slice(API_DOMAIN.length),
-                                    });
-                                }}
+                                icon={<SaveOutlined />}
+                                onClick={handleUpdate}
+                                loading={isLoadingUpdateUser}
                             >
-                                Chọn ảnh
+                                Cập nhật
+                            </Button>
+                            <Button
+                                style={{ backgroundColor: "rgb(243, 156, 18)" }}
+                                type="primary"
+                                icon={<RetweetOutlined />}
+                                onClick={handleResetPassword}
+                                loading={isLoadingResetPassword}
+                            >
+                                Reset mật khẩu
                             </Button>
                         </Space>
-                        <Button
-                            type="primary"
-                            disabled={!imageSelected}
-                            danger
-                            onClick={handleDeleteImage}
-                            loading={isLoadingDeleteImage}
+
+                        <Form
+                            form={form}
+                            layout="vertical"
+                            autoComplete="off"
+                            initialValues={user}
                         >
-                            Xóa ảnh
-                        </Button>
-                    </Flex>
+                            <Row>
+                                <Col span={12}>
+                                    <Form.Item
+                                        label="Họ tên"
+                                        name="name"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "Họ tên không được để trống!",
+                                            },
+                                        ]}
+                                    >
+                                        <Input placeholder="Enter name" />
+                                    </Form.Item>
 
-                    <div style={{ marginTop: "1rem" }} id="image-container">
-                        <Row gutter={[16, 16]} wrap={true}>
-                            {imagesRendered &&
-                                imagesRendered.map((image, index) => (
-                                    <Col span={6} key={index}>
-                                        <div
-                                            className={`${imageSelected === image.url
-                                                ? "image-selected"
-                                                : ""
-                                                } image-item border`}
-                                            onClick={selecteImage(image.url)}
-                                        >
-                                            <img
-                                                src={image.url}
-                                                alt={`image-${index}`}
-                                                style={{ width: "100%" }}
+                                    <Form.Item
+                                        label="Email"
+                                        name="email"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "Email không được để trống!",
+                                            },
+                                            {
+                                                type: "email",
+                                                message: "Email không đúng định dạng!",
+                                            },
+                                        ]}
+                                    >
+                                        <Input placeholder="Enter email" disabled />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        label="Số điện thoại"
+                                        name="phone"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "Số điện thoại không được để trống!",
+                                            },
+                                            {
+                                                pattern: new RegExp(/^(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})$/),
+                                                message: 'Số điện thoại di động không hợp lệ!',
+                                            },
+                                        ]}
+                                    >
+                                        <Input placeholder="Enter phone" />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        label="Quyền"
+                                        name="role"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "Quyền không được để trống!",
+                                            },
+                                        ]}
+                                    >
+                                        <Select
+                                            style={{ width: "100%" }}
+                                            showSearch
+                                            placeholder="Select a role"
+                                            optionFilterProp="children"
+                                            filterOption={(input, option) =>
+                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                                            options={[
+                                                { label: "ADMIN", value: "ADMIN" },
+                                                { label: "USER", value: "USER" },
+                                            ]}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        label="Trạng thái"
+                                        name="enabled"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message:
+                                                    "Trạng thái tài khoản không được để trống!",
+                                            },
+                                        ]}
+                                    >
+                                        <Select
+                                            style={{ width: "100%" }}
+                                            showSearch
+                                            placeholder="Select a enabled"
+                                            optionFilterProp="children"
+                                            filterOption={(input, option) =>
+                                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                                            options={[
+                                                { label: "Kích hoạt", value: true },
+                                                { label: "Chưa kích hoạt", value: false },
+                                            ]}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item name="avatar">
+                                        <Space direction="vertical">
+                                            <Avatar
+                                                src={<img src={avatar} alt="avatar" />}
+                                                size={180}
                                             />
-                                        </div>
-                                    </Col>
-                                ))}
-                        </Row>
-                    </div>
+                                            <Button
+                                                type="primary"
+                                                onClick={() => setIsModalOpen(true)}
+                                            >
+                                                Thay đổi ảnh đại diện
+                                            </Button>
+                                        </Space>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </Form>
 
-                    <Pagination
-                        current={currentPage}
-                        pageSize={pageSize}
-                        total={totalImages}
-                        onChange={onPageChange}
-                        showSizeChanger={false}
-                        style={{ marginTop: 16, textAlign: 'center' }}
-                    />
-                </Modal>
+                        <Modal
+                            title="Chọn ảnh của bạn"
+                            open={isModalOpen}
+                            onCancel={() => {
+                                setIsModalOpen(false);
+                                setImageSelected(null);
+                            }}
+                            footer={null}
+                            width={1200}
+                            style={{ top: 20 }}
+                        >
+                            <Flex justify="space-between" align="center">
+                                <Space direction="horizontal">
+                                    <Upload
+                                        maxCount={1}
+                                        customRequest={handleUploadImage}
+                                        showUploadList={false}
+                                    >
+                                        <Button
+                                            type="primary"
+                                            style={{
+                                                backgroundColor: "rgb(243, 156, 18)",
+                                            }}
+                                            loading={isLoadingUploadImage}
+                                        >
+                                            Tải ảnh lên
+                                        </Button>
+                                    </Upload>
+
+                                    <Button
+                                        type="primary"
+                                        disabled={!imageSelected}
+                                        onClick={() => {
+                                            setAvatar(imageSelected);
+                                            setIsModalOpen(false);
+                                            form.setFieldsValue({
+                                                avatar: imageSelected.slice(API_DOMAIN.length),
+                                            });
+                                        }}
+                                    >
+                                        Chọn ảnh
+                                    </Button>
+                                </Space>
+                                <Button
+                                    type="primary"
+                                    disabled={!imageSelected}
+                                    danger
+                                    onClick={handleDeleteImage}
+                                    loading={isLoadingDeleteImage}
+                                >
+                                    Xóa ảnh
+                                </Button>
+                            </Flex>
+
+                            <div style={{ marginTop: "1rem" }} id="image-container">
+                                <Row gutter={[16, 16]} wrap={true}>
+                                    {imagesRendered &&
+                                        imagesRendered.map((image, index) => (
+                                            <Col span={6} key={index}>
+                                                <div
+                                                    className={`${imageSelected === image.url
+                                                        ? "image-selected"
+                                                        : ""
+                                                        } image-item border`}
+                                                    onClick={selecteImage(image.url)}
+                                                >
+                                                    <img
+                                                        src={image.url}
+                                                        alt={`image-${index}`}
+                                                        style={{ width: "100%" }}
+                                                    />
+                                                </div>
+                                            </Col>
+                                        ))}
+                                </Row>
+                            </div>
+
+                            <Pagination
+                                current={currentPage}
+                                pageSize={pageSize}
+                                total={totalImages}
+                                onChange={onPageChange}
+                                showSizeChanger={false}
+                                style={{ marginTop: 16, textAlign: 'center' }}
+                            />
+                        </Modal>
+                    </Tabs.TabPane>
+
+                    <Tabs.TabPane tab="Lịch sử đặt vé" key={2}>
+                        <OrderListByUser data={orders} />
+                    </Tabs.TabPane>
+                </Tabs>
             </div>
         </>
     );

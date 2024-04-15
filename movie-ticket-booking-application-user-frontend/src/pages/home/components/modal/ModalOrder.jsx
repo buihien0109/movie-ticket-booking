@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useLazyCheckCouponValidQuery } from '../../../../app/services/coupon.api';
 import { useCreateOrderMutation } from '../../../../app/services/order.api';
-import { formatCurrency, formatDate, formatMovieAge } from '../../../../utils/functionUtils';
 import ModalBase from '../../../../components/modal/base/ModalBase';
+import { formatCurrency, formatDate, formatMovieAge } from '../../../../utils/functionUtils';
 
 const parseGraphicsType = (type) => {
     switch (type) {
@@ -30,7 +32,14 @@ function ModalOrder(props) {
     const navigate = useNavigate()
     const { open, handleOpen, zIndex, schedule, showtimes, selectedSeats, totalPriceSeat, selectedServices, totalPriceService } = props
     const { cinema, movie } = schedule
+    const [couponCode, setCouponCode] = useState("")
+    const [coupon, setCoupon] = useState({
+        code: null,
+        discount: 0,
+        valid: false
+    })
     const [createOrder, { isLoading }] = useCreateOrderMutation()
+    const [checkCouponValid] = useLazyCheckCouponValidQuery()
 
     const handlePayment = () => {
         const order = {
@@ -43,7 +52,8 @@ function ModalOrder(props) {
                 additionalServiceId: service.id,
                 quantity: service.count,
                 price: service.price
-            }))
+            })),
+            couponCode: coupon.valid ? coupon.code : null
         }
         createOrder(order).unwrap()
             .then((res) => {
@@ -51,10 +61,41 @@ function ModalOrder(props) {
             })
             .catch((error) => {
                 console.log(error)
+                toast.error(error?.data?.message || "Đã có lỗi xảy ra, vui lòng thử lại sau")
             })
     }
 
-    const totalPrice = totalPriceSeat + totalPriceService
+    const checkCoupon = (e) => {
+        console.log(e.target.value);
+        if (e.key === "Enter") {
+            if (couponCode.trim().length > 0) {
+                checkCouponValid(couponCode)
+                    .unwrap()
+                    .then((res) => {
+                        console.log(res);
+                        toast.success("Áp dụng mã giảm giá thành công")
+                        setCoupon({
+                            code: couponCode,
+                            discount: res.discount,
+                            valid: true
+                        })
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        toast.error(error?.data?.message || "Đã có lỗi xảy ra, vui lòng thử lại sau")
+                        setCoupon({
+                            code: null,
+                            discount: 0,
+                            valid: false
+                        })
+                    })
+            }
+        }
+    }
+
+    const tempPrice = totalPriceSeat + totalPriceService
+    const discountPrice = coupon.valid ? tempPrice * coupon.discount / 100 : 0
+    const totalPrice = tempPrice - discountPrice
     return (
         <>
             <ModalBase isOpen={open} onClose={handleOpen} size="sm" zIndex={zIndex} style={{ width: "600px" }}>
@@ -139,10 +180,44 @@ function ModalOrder(props) {
                                         <div>
                                             <div className="text-gray-800"><b>Tạm tính</b></div>
                                         </div>
+                                        <div className="text-gray-800"><b>{formatCurrency(tempPrice)}đ</b></div>
+                                    </li>
+                                    <li className="flex items-end justify-between space-x-10">
+                                        <div>
+                                            <div className="text-gray-800"><b>Giảm giá {coupon.valid ? `(${coupon.discount}%)` : ""}</b></div>
+                                        </div>
+                                        <div className="text-gray-800"><b>{formatCurrency(discountPrice)}đ</b></div>
+                                    </li>
+                                    <li className="flex items-end justify-between space-x-10">
+                                        <div>
+                                            <div className="text-gray-800"><b>Thành tiền</b></div>
+                                        </div>
                                         <div className="text-gray-800"><b>{formatCurrency(totalPrice)}đ</b></div>
                                     </li>
                                 </ul>
-                                <div className="mt-2 text-xs italic leading-normal text-gray-500">Ưu đãi (nếu có) sẽ được áp dụng ở bước thanh toán.</div>
+                                <ul className="mt-4 border-t border-dashed border-gray-200 pt-4">
+                                    <li className="flex items-end justify-between space-x-10 mb-2">
+                                        <div>
+                                            <span className="block font-semibold text-gray-500" style={{ fontSize: "11px" }}>
+                                                MÃ GIẢM GIÁ
+                                            </span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div>
+                                            <input
+                                                value={couponCode}
+                                                onChange={(e) => setCouponCode(e.target.value)}
+                                                onKeyUp={e => checkCoupon(e)}
+                                                type="text"
+                                                name="code"
+                                                id="code"
+                                                placeholder='Nhập mã giảm giá'
+                                                className="border text-sm border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                                            />
+                                        </div>
+                                    </li>
+                                </ul>
 
                                 <div className="mt-4">
                                     <button

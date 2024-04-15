@@ -1,11 +1,11 @@
 import { Spin, theme } from "antd";
 import React from "react";
 import { Helmet } from "react-helmet";
-import { useGetDashboardDataQuery } from "../../app/services/dashboard.service";
-import AppBreadCrumb from "../../components/layout/AppBreadCrumb";
-import ViewChart from "./chart/ViewChart";
+import { useGetDashboardDataQuery } from "../../../app/services/dashboard.service";
+import AppBreadCrumb from "../../../components/layout/AppBreadCrumb";
 import DashboardSummary from "./summary/DashboardSummary";
-import DashboardTable from "./table/DashBoardTable";
+import ViewChart from "./chart/ViewChart";
+import DashboardTable from "./table/DashboardTable";
 
 const Dashboard = () => {
     const {
@@ -32,12 +32,10 @@ const Dashboard = () => {
                 }}
             >
                 <DashboardSummary
-                    countLatestBlogs={data?.countLatestBlogs}
+                    revenueToday={data?.revenueToday}
                     countLatestUsers={data?.countLatestUsers}
-                    countLatestComments={data?.countLatestComments}
                 />
                 <ViewChart
-                    totalViewsByMonth={data?.totalViewsByMonth}
                     topViewBlogs={data?.topViewBlogs}
                 />
                 <DashboardTable

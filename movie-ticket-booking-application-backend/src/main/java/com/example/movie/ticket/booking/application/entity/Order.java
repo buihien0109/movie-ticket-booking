@@ -34,6 +34,14 @@ public class Order {
     @Enumerated(EnumType.STRING)
     OrderStatus status;
 
+    Integer discount;
+
+    @Transient
+    Integer tempPrice;
+
+    @Transient
+    Integer discountPrice;
+
     @Transient
     Integer totalPrice;
 
@@ -50,7 +58,7 @@ public class Order {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
-    public int getTotalPrice() {
+    public int getTempPrice() {
         Integer ticketPrice = ticketItems.stream()
                 .map(OrderTicketItem::getPrice)
                 .reduce(0, Integer::sum);
@@ -58,6 +66,17 @@ public class Order {
                 .map(serviceItems -> serviceItems.getPrice() * serviceItems.getQuantity())
                 .reduce(0, Integer::sum);
         return ticketPrice + servicePrice;
+    }
+
+    public int getDiscountPrice() {
+        if (discount == null) {
+            return 0;
+        }
+        return getTempPrice() * discount / 100;
+    }
+
+    public int getTotalPrice() {
+        return getTempPrice() - getDiscountPrice();
     }
 
     @PrePersist

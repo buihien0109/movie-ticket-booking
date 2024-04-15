@@ -89,4 +89,20 @@ public class CouponService {
 
         couponRepository.delete(coupon);
     }
+
+    public Coupon checkValidCoupon(String code) {
+        Coupon coupon = couponRepository.findByCodeAndStatus(code, true)
+                .orElseThrow(() -> new ResourceNotFoundException("Coupon không hợp lệ"));
+
+        Date now = new Date();
+        if (now.before(coupon.getStartDate()) || now.after(coupon.getEndDate())) {
+            throw new BadRequestException("Coupon đã hết hạn sử dụng");
+        }
+
+        if (coupon.getUsed() >= coupon.getQuantity()) {
+            throw new BadRequestException("Coupon đã hết lượt sử dụng");
+        }
+
+        return coupon;
+    }
 }

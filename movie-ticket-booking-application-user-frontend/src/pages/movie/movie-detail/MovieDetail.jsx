@@ -266,11 +266,11 @@ function MovieDetail() {
             </div>
 
             <div className="mx-auto w-full max-w-6xl px-5 md:px-8 lg:px-8">
-                <div className="-mt-16 grid grid-cols-1 pt-16 lg:grid-cols-3 lg:gap-12">
+                <div id="phimLichChieu" className="-mt-16 grid grid-cols-1 pt-16 lg:grid-cols-3 lg:gap-12">
                     <div className="lg:col-span-2 lg:col-start-1">
                         <section className="py-8">
                             <div className="mb-2 sm:mb-0">
-                                <h2 className="text-xl font-bold sm:pr-80">Lịch chiếu {movie.name}</h2>
+                                <h2 className="text-xl font-bold">Lịch chiếu {movie.name}</h2>
 
                                 <div className="relative mt-4">
                                     <div className="rounded md:border md:border-gray-200">

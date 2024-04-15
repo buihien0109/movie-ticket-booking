@@ -57,6 +57,9 @@ export const userApi = createApi({
                 method: "POST",
             }),
         }),
+        getOrdersByUser: builder.query({
+            query: (id) => `users/${id}/orders`,
+        }),
     }),
 });
 
@@ -67,4 +70,5 @@ export const {
     useUpdateUserMutation,
     useDeleteUserMutation,
     useResetPasswordMutation,
+    useGetOrdersByUserQuery,
 } = userApi;

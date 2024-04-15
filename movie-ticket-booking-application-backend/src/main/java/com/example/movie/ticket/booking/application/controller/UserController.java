@@ -4,6 +4,7 @@ import com.example.movie.ticket.booking.application.model.request.CreateUserRequ
 import com.example.movie.ticket.booking.application.model.request.UpdatePasswordRequest;
 import com.example.movie.ticket.booking.application.model.request.UpdateProfileUserRequest;
 import com.example.movie.ticket.booking.application.model.request.UpdateUserRequest;
+import com.example.movie.ticket.booking.application.service.OrderService;
 import com.example.movie.ticket.booking.application.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final OrderService orderService;
 
     @PostMapping("/users/update-avatar")
     public ResponseEntity<?> updateAvatar(@RequestParam("file") MultipartFile file) {
@@ -67,5 +69,10 @@ public class UserController {
     public ResponseEntity<?> resetPassword(@PathVariable Integer id) {
         String password = userService.resetPassword(id);
         return ResponseEntity.ok(password);
+    }
+
+    @GetMapping("/admin/users/{id}/orders")
+    public ResponseEntity<?> getOrdersByUser(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderService.getOrdersByUserId(id));
     }
 }

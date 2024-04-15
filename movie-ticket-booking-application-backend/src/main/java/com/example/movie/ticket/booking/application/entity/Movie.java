@@ -11,10 +11,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Builder
 @AllArgsConstructor
@@ -49,11 +46,11 @@ public class Movie {
 
     @Type(JsonType.class)
     @Column(columnDefinition = "json")
-    List<GraphicsType> graphics; // hình thức chiếu
+    List<GraphicsType> graphics = new ArrayList<>(); // hình thức chiếu
 
     @Type(JsonType.class)
     @Column(columnDefinition = "json")
-    List<TranslationType> translations; // hình thức dịch
+    List<TranslationType> translations = new ArrayList<>(); // hình thức dịch
 
     @Enumerated(EnumType.STRING)
     MovieAge age; // độ tuổi
@@ -85,7 +82,7 @@ public class Movie {
     @Fetch(FetchMode.SUBSELECT)
     Set<Actor> actors = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(FetchMode.SUBSELECT)
     Set<Review> reviews = new LinkedHashSet<>();
 

@@ -25,7 +25,7 @@ public class UserTests {
 
     @Test
     void save_users() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 30; i++) {
             String name = generateName();
             User user = User.builder()
                     .name(name)
@@ -33,7 +33,8 @@ public class UserTests {
                     .phone(generatePhone())
                     .avatar(StringUtils.generateLinkImage(name))
                     .password(passwordEncoder.encode("123"))
-                    .role(i == 0 ? UserRole.ADMIN : UserRole.USER)
+                    .role(UserRole.USER)
+                    .enabled(true)
                     .build();
 
             userRepository.save(user);
@@ -49,12 +50,12 @@ public class UserTests {
 
         // Random ds tên đệm người dùng theo tên gọi Việt Nam
         List<String> listTenDem = List.of(
-                "Văn", "Thị", "Hồng", "Hải", "Hà", "Hưng", "Hùng", "Hạnh", "Hạ", "Thanh"
+                "Văn", "Thị", "Hồng", "Hải", "Hà", "Hưng", "Hùng", "Hạnh", "Hạ", "Thanh", "Vũ", "Minh", "Anh", "Duy", "Dương", "Đức", "Đăng", "Đạt", "Điệp", "Đinh", "Đông", "Đức"
         );
 
         // Random ds tên người dùng theo tên gọi Việt Nam (30 tên phổ biến từ A -> Z) (ít vần H)
         List<String> listTen = List.of(
-                "An", "Bình", "Cường", "Dũng", "Đức", "Giang", "Hải", "Hào", "Hùng", "Hưng", "Minh", "Nam", "Nghĩa", "Phong", "Phúc", "Quân", "Quang", "Quốc", "Sơn", "Thắng", "Thành", "Thiên", "Thịnh", "Thuận", "Tiến", "Trung", "Tuấn", "Vinh", "Vũ", "Xuân"
+                "An", "Bình", "Cường", "Dũng", "Đức", "Giang", "Hải", "Hào", "Hùng", "Hưng", "Minh", "Nam", "Nghĩa", "Phong", "Phúc", "Quân", "Quang", "Quốc", "Sơn", "Thắng", "Thành", "Thiên", "Thịnh", "Thuận", "Tiến", "Trung", "Tuấn", "Vinh", "Vũ", "Xuân", "Yên", "Hoa", "Huy", "Hà", "Hân", "Hòa", "Hồng", "Hương", "Hưng", "Hạnh", "Hải", "Hậu", "Hằng"
         );
 
         Random random = new Random();

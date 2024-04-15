@@ -9,7 +9,7 @@ function MovieReviewItem({ movie }) {
                 <div className=" relative z-[1] aspect-[16/9] w-full overflow-hidden bg-gray-200 bg-cover bg-no-repeat">
                     <img alt="bg-review"
                         src={movie.poster}
-                        className="absolute left-0 top-0 z-0 flex h-full w-full" loading="lazy" />
+                        className="absolute left-0 top-0 z-0 flex h-full w-full object-cover" loading="lazy" />
                     <div className="absolute bottom-0 left-0 right-0 flex h-3/4 flex-col-reverse bg-gradient-to-t from-black/75 via-black/20 p-3 ">
                         {movie.reviews.length > 0 && (
                             <div className="mt-1 flex items-center space-x-4">
@@ -19,13 +19,12 @@ function MovieReviewItem({ movie }) {
                                     </div>
                                     <span className="font-bold">{movie.rating}</span>
                                 </div>
-                                <a className="group flex cursor-pointer items-center space-x-1 text-sm text-white"
-                                    href="/cinema/alienoid-2-23726/review">
+                                <Link to={`/review-phim/${movie.id}/${movie.slug}`} className="group flex cursor-pointer items-center space-x-1 text-sm text-white">
                                     <div>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" className="w-6 opacity-70 group-hover:opacity-100"><path fillRule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
                                     </div>
                                     <span className="font-bold">{movie.reviews.length}</span>
-                                </a>
+                                </Link>
                             </div>
                         )}
                         <h3 className="truncate text-sm font-bold leading-tight text-white hover:text-pink-100">{movie.name}</h3>

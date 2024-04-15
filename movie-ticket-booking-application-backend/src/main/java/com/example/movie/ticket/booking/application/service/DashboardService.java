@@ -1,23 +1,19 @@
 package com.example.movie.ticket.booking.application.service;
 
-import com.example.movie.ticket.booking.application.entity.Blog;
-import com.example.movie.ticket.booking.application.entity.User;
 import com.example.movie.ticket.booking.application.model.dto.BlogViewDto;
 import com.example.movie.ticket.booking.application.model.dto.CinemaRevenueDto;
 import com.example.movie.ticket.booking.application.model.dto.MovieRevenueDto;
-import com.example.movie.ticket.booking.application.model.dto.ViewMonthDto;
 import com.example.movie.ticket.booking.application.repository.BlogRepository;
 import com.example.movie.ticket.booking.application.repository.OrderRepository;
 import com.example.movie.ticket.booking.application.repository.UserRepository;
-import com.example.movie.ticket.booking.application.repository.ViewHistoryRepository;
+import com.example.movie.ticket.booking.application.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,73 +24,72 @@ import java.util.Map;
 public class DashboardService {
     private final BlogRepository blogRepository;
     private final UserRepository userRepository;
-    private final ViewHistoryRepository viewHistoryRepository;
     private final OrderRepository orderRepository;
 
-    public Map<String, Object> getDashboardData() {
+    private Map<String, LocalDate> parseDate(String startDate, String endDate) {
+        LocalDate start = null;
+        LocalDate end = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        if (startDate != null && endDate != null) {
+            start = LocalDate.parse(startDate, formatter);
+            end = LocalDate.parse(endDate, formatter);
+        } else {
+            start = LocalDate.now().withDayOfMonth(1);
+            end = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
+        }
+
+        Map<String, LocalDate> map = new HashMap<>();
+        map.put("start", start);
+        map.put("end", end);
+        return map;
+    }
+
+    public Map<String, Object> getDashboardData(String startDate, String endDate) {
+        Map<String, LocalDate> dateMap = parseDate(startDate, endDate);
+        LocalDate start = dateMap.get("start");
+        LocalDate end = dateMap.get("end");
+
         Map<String, Object> map = new HashMap<>();
-        map.put("countLatestBlogs", countLatestBlogs());
-        map.put("countLatestUsers", countLatestUsers());
-        map.put("totalViewsByMonth", countTotalViewsByMonth(5));
-        map.put("topViewBlogs", getTopViewBlogs(5));
-        map.put("latestBlogs", getLatestBlogs(10));
-        map.put("latestUsers", getLatestUsers(10));
-        map.put("movieRevenues", getMovieRevenues());
-        map.put("cinemaRevenues", getCinemaRevenues());
+        map.put("countLatestUsers", countLatestUsers(start, end));
+        map.put("topViewBlogs", getTopViewBlogs(start, end, 5));
+        map.put("movieRevenues", getMovieRevenues(start, end));
+        map.put("cinemaRevenues", getCinemaRevenues(start, end));
+        map.put("revenueToday", getRevenueToday());
         return map;
     }
 
-    public List<MovieRevenueDto> getMovieRevenues() {
-        return orderRepository.findMovieRevenuesForCurrentMonth();
+    private long getRevenueToday() {
+        LocalDateTime start = DateUtils.atStartOfDay(LocalDate.now());
+        LocalDateTime end = DateUtils.atEndOfDay(LocalDate.now());
+        List<MovieRevenueDto> movieRevenues = orderRepository.findMovieRevenues(start, end);
+        return movieRevenues.stream().mapToLong(MovieRevenueDto::getTotalRevenue).sum();
     }
 
-    public List<CinemaRevenueDto> getCinemaRevenues() {
-        return orderRepository.findCinemaRevenuesForCurrentMonth();
+    public List<MovieRevenueDto> getMovieRevenues(LocalDate startDate, LocalDate endDate) {
+        log.info("getMovieRevenues");
+        LocalDateTime start = DateUtils.atStartOfDay(startDate);
+        LocalDateTime end = DateUtils.atEndOfDay(endDate);
+        return orderRepository.findMovieRevenues(start, end);
     }
 
-    // Đếm số lượng các blog được tạo ra trong tháng hiện tại và tổng số blog có trong hệ thống (Map<String, Long>)
-    public Map<String, Long> countLatestBlogs() {
-        LocalDateTime start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
-        LocalDateTime end = LocalDate.now()
-                .withDayOfMonth(LocalDate.now().lengthOfMonth()).atStartOfDay();
-        long count = blogRepository.countByCreatedAtBetween(start, end);
-        long total = blogRepository.findAll().size();
-
-        Map<String, Long> map = new HashMap<>();
-        map.put("count", count);
-        map.put("total", total);
-        return map;
+    public List<CinemaRevenueDto> getCinemaRevenues(LocalDate startDate, LocalDate endDate) {
+        log.info("getCinemaRevenues");
+        LocalDateTime start = DateUtils.atStartOfDay(startDate);
+        LocalDateTime end = DateUtils.atEndOfDay(endDate);
+        return orderRepository.findCinemaRevenues(start, end);
     }
 
     // Đếm số lượng các user được tạo ra trong tháng hiện tại và tổng số user có trong hệ thống (Map<String, Long>)
-    public Map<String, Long> countLatestUsers() {
-        LocalDateTime start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
-        LocalDateTime end = LocalDate.now()
-                .withDayOfMonth(LocalDate.now().lengthOfMonth()).atStartOfDay();
-        long count = userRepository.countByCreatedAtBetween(start, end);
-        long total = userRepository.findAll().size();
-
-        Map<String, Long> map = new HashMap<>();
-        map.put("count", count);
-        map.put("total", total);
-        return map;
-    }
-
-    // Tính tổng view của 5 tháng gần nhất (Map<String, Long>, String là tháng, Long là tổng view của tháng đó)
-    public List<ViewMonthDto> countTotalViewsByMonth(Integer limit) {
-        List<ViewMonthDto> viewMonthDtos = viewHistoryRepository.countViewsByMonth();
-        if (limit != null && limit > 0) {
-            return viewMonthDtos.subList(0, Math.min(limit, viewMonthDtos.size()));
-        }
-        return viewMonthDtos;
+    public long countLatestUsers(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = DateUtils.atStartOfDay(startDate);
+        LocalDateTime end = DateUtils.atEndOfDay(endDate);
+        return userRepository.countByCreatedAtBetween(start, end);
     }
 
     // Lấy danh sách blog có lượt xem cao nhất trong tháng (sắp xếp theo lượt xem giảm dần)
-    public List<BlogViewDto> getTopViewBlogs(Integer limit) {
-        LocalDateTime start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
-        LocalDateTime end = LocalDate.now()
-                .withDayOfMonth(LocalDate.now().lengthOfMonth()).atStartOfDay();
-
+    public List<BlogViewDto> getTopViewBlogs(LocalDate startDate, LocalDate endDate, Integer limit) {
+        LocalDateTime start = DateUtils.atStartOfDay(startDate);
+        LocalDateTime end = DateUtils.atEndOfDay(endDate);
         List<BlogViewDto> blogViewDtos = blogRepository.findTopViewBlogs(start, end);
         if (limit != null && limit > 0) {
             return blogViewDtos.subList(0, Math.min(limit, blogViewDtos.size()));
@@ -102,17 +97,17 @@ public class DashboardService {
         return blogViewDtos;
     }
 
-    // Lấy danh sách 10 bài blog được tạo gần đây nhất (sắp xếp theo thời gian tạo giảm dần)
-    public List<Blog> getLatestBlogs(Integer limit) {
-        Page<Blog> pageData = blogRepository
-                .findByOrderByCreatedAtDesc(PageRequest.of(0, limit));
-        return pageData.getContent();
+    public List<CinemaRevenueDto> getRevenueByCinema(String startDate, String endDate) {
+        Map<String, LocalDate> dateMap = parseDate(startDate, endDate);
+        LocalDate start = dateMap.get("start");
+        LocalDate end = dateMap.get("end");
+        return getCinemaRevenues(start, end);
     }
 
-    // Lấy danh sách 10 user được tạo gần đây nhất (sắp xếp theo thời gian tạo giảm dần)
-    public List<User> getLatestUsers(Integer limit) {
-        Page<User> pageData = userRepository
-                .findByOrderByCreatedAtDesc(PageRequest.of(0, limit));
-        return pageData.getContent();
+    public List<MovieRevenueDto> getRevenueByMovie(String startDate, String endDate) {
+        Map<String, LocalDate> dateMap = parseDate(startDate, endDate);
+        LocalDate start = dateMap.get("start");
+        LocalDate end = dateMap.get("end");
+        return getMovieRevenues(start, end);
     }
 }

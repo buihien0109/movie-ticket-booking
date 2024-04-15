@@ -21,7 +21,7 @@ public class ScheduleService {
     private final MovieRepository movieRepository;
 
     public List<Schedule> getAllSchedules() {
-        return scheduleRepository.findAll(Sort.by("id").descending());
+        return scheduleRepository.findAll(Sort.by("startDate").descending());
     }
 
     public Schedule getScheduleById(Integer id) {

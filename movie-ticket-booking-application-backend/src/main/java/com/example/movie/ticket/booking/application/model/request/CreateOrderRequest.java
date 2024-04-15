@@ -22,6 +22,8 @@ public class CreateOrderRequest {
 
     List<ServiceItem> serviceItems = new ArrayList<>();
 
+    String couponCode;
+
     @Getter
     @Setter
     @NoArgsConstructor

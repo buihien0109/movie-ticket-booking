@@ -29,7 +29,11 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
+                        .requestMatchers("/api/orders/vnpay-payment").permitAll()
+                        .requestMatchers("/api/users", "/api/users/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/reviews", "/api/reviews/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/orders", "/api/orders/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/coupons", "/api/coupons/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/seat-reservations/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()

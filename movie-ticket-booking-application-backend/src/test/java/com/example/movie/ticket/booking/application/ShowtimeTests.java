@@ -5,6 +5,7 @@ import com.example.movie.ticket.booking.application.entity.Movie;
 import com.example.movie.ticket.booking.application.entity.Schedule;
 import com.example.movie.ticket.booking.application.entity.Showtime;
 import com.example.movie.ticket.booking.application.repository.*;
+import com.example.movie.ticket.booking.application.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,19 +38,20 @@ public class ShowtimeTests {
 
 
     @Test
-    public void save_showtimes() {
+    public void save_showtimes_one_day(LocalDate currentDate) {
         Random random = new Random();
-        List<Schedule> schedules = scheduleRepository.findByMovie_StatusAndStartDateBeforeAndEndDateAfter(true, new Date(), new Date());
+        List<Schedule> schedules = scheduleRepository.findByMovie_StatusAndStartDateBeforeAndEndDateAfter(true, DateUtils.convertLocalDateToDate(currentDate), DateUtils.convertLocalDateToDate(currentDate));
         List<Movie> movies = schedules.stream().map(Schedule::getMovie).toList();
         List<Auditorium> auditoriums = auditoriumRepository.findAll();
         List<Showtime> newShowtimes = new ArrayList<>();
 
+        // Tạo suất chiếu ngẫu nhiên cho từng phòng chiếu
         for (Auditorium auditorium : auditoriums) {
-            int numberOfShowtimes = 3 + random.nextInt(3);  // Between 3 and 5 showtimes
+            int numberOfShowtimes = 4 + random.nextInt(4);  // Between 4 and 7 showtimes
 
             LocalTime showtimeStart = LocalTime.of(8, 0);  // Start at 8:00
             for (int i = 0; i < numberOfShowtimes; i++) {
-                if (showtimeStart.isAfter(LocalTime.of(22, 0))) {
+                if (showtimeStart.isAfter(LocalTime.of(23, 0))) {
                     break;
                 }
 
@@ -61,7 +63,9 @@ public class ShowtimeTests {
                 Showtime showtime = new Showtime();
                 showtime.setMovie(selectedMovie);
                 showtime.setAuditorium(auditorium);
-                showtime.setDate(LocalDate.now());  // Or set a specific date
+                showtime.setGraphicsType(selectedMovie.getGraphics().get(random.nextInt(selectedMovie.getGraphics().size())));
+                showtime.setTranslationType(selectedMovie.getTranslations().get(random.nextInt(selectedMovie.getTranslations().size())));
+                showtime.setDate(currentDate);  // Or set a specific date
                 showtime.setStartTime(showtimeStart.format(DateTimeFormatter.ofPattern("HH:mm")));
                 showtime.setEndTime(showtimeEnd.format(DateTimeFormatter.ofPattern("HH:mm")));
 
@@ -73,6 +77,16 @@ public class ShowtimeTests {
         }
 
         showtimeRepository.saveAll(newShowtimes);
+    }
+
+    @Test
+    void save_showtimes_in_range_day() {
+        LocalDate startDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = startDate.plusDays(60);
+
+        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+            save_showtimes_one_day(date);
+        }
     }
 
     private LocalTime roundToNextFive(LocalTime time) {

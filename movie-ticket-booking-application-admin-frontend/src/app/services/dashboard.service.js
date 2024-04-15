@@ -20,12 +20,88 @@ export const dashboardApi = createApi({
     endpoints: (builder) => ({
         getDashboardData: builder.query({
             query: () => "dashboard"
+        }),
+        getRevenueByMovie: builder.query({
+            query: ({ startDate, endDate }) => {
+                let params = {};
+                if (startDate) {
+                    params.startDate = startDate;
+                }
+                if (endDate) {
+                    params.endDate = endDate;
+                }
+                return {
+                    url: `revenue/movie`,
+                    method: "GET",
+                    params
+                }
+
+            }
+        }),
+        getRevenueByCinema: builder.query({
+            query: ({ startDate, endDate }) => {
+                let params = {};
+                if (startDate) {
+                    params.startDate = startDate;
+                }
+                if (endDate) {
+                    params.endDate = endDate;
+                }
+                return {
+                    url: `revenue/cinema`,
+                    method: "GET",
+                    params
+                }
+
+            }
+        }),
+        exportRevenueByMovie: builder.query({
+            query: ({ startDate, endDate }) => {
+                let params = {};
+                if (startDate) {
+                    params.startDate = startDate;
+                }
+                if (endDate) {
+                    params.endDate = endDate;
+                }
+                return {
+                    url: `revenue/movie/export`,
+                    method: "GET",
+                    params,
+                    responseHandler: "blob"
+                }
+            }
+        }),
+        exportRevenueByCinema: builder.query({
+            query: ({ startDate, endDate }) => {
+                let params = {};
+                if (startDate) {
+                    params.startDate = startDate;
+                }
+                if (endDate) {
+                    params.endDate = endDate;
+                }
+                return {
+                    url: `revenue/cinema/export`,
+                    method: "GET",
+                    params
+                }
+
+            },
+            responseHandler: 'blob'
         })
     }),
+
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
-    useGetDashboardDataQuery
+    useGetDashboardDataQuery,
+    useGetRevenueByMovieQuery,
+    useGetRevenueByCinemaQuery,
+    useLazyGetRevenueByCinemaQuery,
+    useLazyGetRevenueByMovieQuery,
+    useLazyExportRevenueByCinemaQuery,
+    useLazyExportRevenueByMovieQuery
 } = dashboardApi;

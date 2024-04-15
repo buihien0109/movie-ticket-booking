@@ -27,7 +27,7 @@ export const options = {
     },
     title: {
       display: true,
-      text: 'Top bài viết được xem nhiều nhất trong tháng',
+      text: 'Top bài viết được xem nhiều nhất',
     },
   },
 };

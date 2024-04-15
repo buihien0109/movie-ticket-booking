@@ -6,10 +6,12 @@ import com.example.movie.ticket.booking.application.model.dto.MovieReviewWebDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderRepositoryCustom {
-    List<MovieRevenueDto> findMovieRevenuesForCurrentMonth();
+    List<MovieRevenueDto> findMovieRevenues(LocalDateTime startDate, LocalDateTime endDate);
 
-    List<CinemaRevenueDto> findCinemaRevenuesForCurrentMonth();
+    List<CinemaRevenueDto> findCinemaRevenues(LocalDateTime startDate, LocalDateTime endDate);
 }

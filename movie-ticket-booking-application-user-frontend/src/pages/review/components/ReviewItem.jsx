@@ -77,7 +77,7 @@ function ReviewItem({ review, movieId, onSetPage }) {
                         <div className="mt-3 flex items-center">
                             <button
                                 onClick={handleOpenUpdate}
-                                className="flex items-center justify-center text-sm bg-blue-500 text-white px-3 py-1 rounded-full me-2 hover:bg-blue-600"
+                                className="flex items-center justify-center text-sm border border-blue-500 text-blue-500 px-3 py-1 rounded-full me-2"
                             >
                                 <svg
                                     className='w-5 h-5'
@@ -93,7 +93,7 @@ function ReviewItem({ review, movieId, onSetPage }) {
                             </button>
                             <button
                                 onClick={handleOpenDelete}
-                                className="flex items-center justify-center text-sm bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600"
+                                className="flex items-center justify-center text-sm border border-red-500 text-red-500 px-3 py-1 rounded-full"
                             >
                                 <svg
                                     className='w-4 h-4'

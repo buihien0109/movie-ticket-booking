@@ -192,10 +192,32 @@ const OrderDetail = () => {
                         </Row>
                         <Row>
                             <Col span={7}>
+                                <Typography.Paragraph strong>Thành tiền:</Typography.Paragraph>
+                            </Col>
+                            <Col span={17}>
+                                <Typography.Paragraph>
+                                    <Tag color="blue">{formatCurrency(order?.tempPrice)}</Tag>
+                                </Typography.Paragraph>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={7}>
+                                <Typography.Paragraph strong>Giảm giá {order?.discount ? `(${order?.discount}%)` : ""}:</Typography.Paragraph>
+                            </Col>
+                            <Col span={17}>
+                                <Typography.Paragraph>
+                                    <Tag color="blue">{formatCurrency(order?.discountPrice)}</Tag>
+                                </Typography.Paragraph>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={7}>
                                 <Typography.Paragraph strong>Tổng tiền:</Typography.Paragraph>
                             </Col>
                             <Col span={17}>
-                                <Typography.Paragraph>{formatCurrency(order?.totalPrice)}</Typography.Paragraph>
+                                <Typography.Paragraph>
+                                    <Tag color="blue">{formatCurrency(order?.totalPrice)}</Tag>
+                                </Typography.Paragraph>
                             </Col>
                         </Row>
                     </Col>

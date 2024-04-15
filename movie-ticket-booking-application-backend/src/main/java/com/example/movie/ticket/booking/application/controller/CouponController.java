@@ -1,6 +1,5 @@
 package com.example.movie.ticket.booking.application.controller;
 
-import com.example.movie.ticket.booking.application.entity.Coupon;
 import com.example.movie.ticket.booking.application.model.request.UpsertCouponRequest;
 import com.example.movie.ticket.booking.application.service.CouponService;
 import jakarta.validation.Valid;
@@ -16,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 public class CouponController {
     private final CouponService couponService;
 
-    @GetMapping("/public/coupons/check")
-    public ResponseEntity<?> checkCoupon(@RequestParam String couponCode) {
-        return ResponseEntity.ok(couponService.checkCouponValid(couponCode));
+    @GetMapping("/coupons/{code}/check")
+    public ResponseEntity<?> checkCoupon(@PathVariable String code) {
+        return ResponseEntity.ok(couponService.checkCouponValid(code));
     }
 
     @GetMapping("/admin/coupons")

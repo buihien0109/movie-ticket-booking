@@ -13,5 +13,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer>, OrderRep
 
     List<Order> findByStatusAndCreatedAtBefore(OrderStatus orderStatus, LocalDateTime createdAt);
 
-    List<Order> findByUser_IdAndStatus(Integer id, OrderStatus status);
+    List<Order> findByUser_IdAndStatusOrderByCreatedAtDesc(Integer id, OrderStatus status);
+
+    List<Order> findByUser_IdOrderByCreatedAtDesc(Integer userId);
 }

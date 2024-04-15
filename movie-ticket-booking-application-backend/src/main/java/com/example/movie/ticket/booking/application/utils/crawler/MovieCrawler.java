@@ -1,9 +1,12 @@
 package com.example.movie.ticket.booking.application.utils.crawler;
 
 import com.example.movie.ticket.booking.application.entity.*;
+import com.example.movie.ticket.booking.application.model.enums.GraphicsType;
 import com.example.movie.ticket.booking.application.model.enums.MovieAge;
+import com.example.movie.ticket.booking.application.model.enums.TranslationType;
 import com.example.movie.ticket.booking.application.repository.*;
 import com.example.movie.ticket.booking.application.utils.DateUtils;
+import com.example.movie.ticket.booking.application.utils.StringUtils;
 import com.github.javafaker.Faker;
 import com.github.slugify.Slugify;
 import lombok.RequiredArgsConstructor;
@@ -40,26 +43,33 @@ public class MovieCrawler {
             String slug = slugify.slugify(name);
             String trailer = "https://www.youtube.com/embed/Yz96EBNwMGw?si=Q6ipYZPKhUdAHGsd";
             String description = doc.selectFirst(".jsx-9e4ccf1f4860abb8.mt-1.text-sm.leading-relaxed.text-white.text-opacity-70").text();
-            String poster = doc.selectFirst("meta[property=og:image]").attr("content");
+            String poster = doc.selectFirst(".aspect-w-7.aspect-h-10.w-full img").attr("src");
             Integer releaseYear = Integer.valueOf(doc.selectFirst(".jsx-9e4ccf1f4860abb8.mt-1.flex.flex-wrap.items-center.text-sm.text-white.text-opacity-60 li:nth-child(3)").text());
 
             double rating = 0.0;
             Element ratingElement = doc.selectFirst("div.jsx-9e4ccf1f4860abb8.text-2xl.font-bold");
-            if(ratingElement != null) {
+            if (ratingElement != null) {
                 rating = Double.parseDouble(ratingElement.text());
             }
             String durationString = doc.selectFirst(".jsx-9e4ccf1f4860abb8.mt-1.flex.flex-wrap.items-center.text-sm.text-white.text-opacity-60 li:nth-child(5)").text();
             Integer duration = Integer.valueOf(durationString.split(" ")[0]);
             Boolean status = true;
 
+            Elements elements = doc.select(".jsx-9e4ccf1f4860abb8.mt-1.font-bold.text-white.text-opacity-90");
             Element showDateElement = doc.select(".jsx-9e4ccf1f4860abb8.mt-1.font-bold.text-white.text-opacity-90").get(0);
             Date showDate = DateUtils.parseDate(showDateElement.text());
 
             String ageString = doc.selectFirst(".jsx-eac8bcf445f41f1d.inline-flex.h-5.items-center.justify-center.rounded-sm.bg-opacity-80.px-1.text-xs.font-semibold.text-white.text-opacity-95").text();
             MovieAge age = parseAge(ageString);
 
-            Element contryElement = doc.select(".jsx-9e4ccf1f4860abb8.mt-1.font-bold.text-white.text-opacity-90").get(2);
-            Country country = parseCountry(contryElement);
+            Country country;
+            if (elements.size() > 2) {
+                Element contryElement = elements.get(2);
+                country = parseCountry(contryElement);
+            } else {
+                List<Country> countries = countryRepository.findAll();
+                country = countries.get(random.nextInt(countries.size()));
+            }
 
             // Lấy danh sách thể loại
             Element genreElements = doc.select(".jsx-9e4ccf1f4860abb8.mt-1.font-bold.text-white.text-opacity-90").get(1);
@@ -96,6 +106,8 @@ public class MovieCrawler {
                     .duration(duration)
                     .status(status)
                     .showDate(showDate)
+                    .graphics(new ArrayList<>(List.of(GraphicsType._2D)))
+                    .translations(new ArrayList<>(List.of(TranslationType.SUBTITLING)))
                     .age(age)
                     .country(country)
                     .genres(genreList)
@@ -148,8 +160,10 @@ public class MovieCrawler {
         Faker faker = new Faker();
         List<Actor> actorList = new ArrayList<>();
         actorElements.forEach(actorElement -> {
-            String name = actorElement.selectFirst(".mt-1.mb-1.text-sm.leading-tight ").text();
-            String avatar = actorElement.selectFirst(".absolute.inset-0.h-20.w-20.object-cover").attr("src");
+            String name = actorElement.selectFirst(".mt-1.mb-1.text-sm.leading-tight").text();
+
+            Element avatarElement = actorElement.selectFirst("img.absolute.inset-0.h-20.w-20.object-cover");
+            String avatar = avatarElement != null ? avatarElement.attr("src") : StringUtils.generateLinkImage(name);
 
             Actor actor = Actor.builder()
                     .name(name)
@@ -176,7 +190,8 @@ public class MovieCrawler {
     private Director parseDirector(Element directorElement) {
         Faker faker = new Faker();
         String name = directorElement.selectFirst(".mt-1.mb-1.text-sm.leading-tight ").text();
-        String avatar = directorElement.selectFirst(".absolute.inset-0.h-20.w-20.object-cover").attr("src");
+        Element avatarElement = directorElement.selectFirst(".absolute.inset-0.h-20.w-20.object-cover");
+        String avatar = avatarElement != null ? avatarElement.attr("src") : StringUtils.generateLinkImage(name);
 
         Director director = Director.builder()
                 .name(name)
@@ -215,6 +230,38 @@ public class MovieCrawler {
 
     public void crawlAllMovie() {
         List<String> urls = new ArrayList<>(List.of(
+                "https://momo.vn/cinema/furiosa-a-mad-max-saga-23721",
+                "https://momo.vn/cinema/face-off-7-one-wish-23775",
+                "https://momo.vn/cinema/mickey-17-890",
+                "https://momo.vn/cinema/if-23773",
+                "https://momo.vn/cinema/joker-folie-a-deux-23796",
+                "https://momo.vn/cinema/inside-out-2-23689",
+                "https://momo.vn/cinema/peenak-4-23797",
+                "https://momo.vn/cinema/the-garfield-movie-23720",
+                "https://momo.vn/cinema/kingdom-of-the-planet-of-the-apes-23705",
+                "https://momo.vn/cinema/the-fall-guy-23774",
+                "https://momo.vn/cinema/the-sin-23803",
+                "https://momo.vn/cinema/the-roundup-punishment-23798",
+                "https://momo.vn/cinema/love-lies-bleeding-23777",
+                "https://momo.vn/cinema/immaculate-23804",
+                "https://momo.vn/cinema/b4s-23754",
+
+                "https://momo.vn/cinema/seishun-18-2-kimi-e-to-tsuzuku-michi-23791",
+                "https://momo.vn/cinema/the-first-omen-23769",
+                "https://momo.vn/cinema/civil-war-23778",
+                "https://momo.vn/cinema/ghostbusters-frozen-empire-23771",
+                "https://momo.vn/cinema/godzilla-x-kong-the-new-empire-23713",
+                "https://momo.vn/cinema/the-price-of-happiness-23795",
+                "https://momo.vn/cinema/a-fragile-flower-23800",
+                "https://momo.vn/cinema/wannabe-23794",
+                "https://momo.vn/cinema/imaginary-23802",
+                "https://momo.vn/cinema/monkey-man-23779",
+                "https://momo.vn/cinema/exhuma-23755",
+                "https://momo.vn/cinema/the-elite-of-devils-23792",
+                "https://momo.vn/cinema/kung-fu-panda-4-23758",
+                "https://momo.vn/cinema/suga-agust-d-tour-dday-the-movie-23776",
+
+
                 "https://momo.vn/cinema/lat-mat-6-tam-ve-dinh-menh-961",
                 "https://momo.vn/cinema/the-house-of-no-man-879",
                 "https://momo.vn/cinema/avatar-the-way-of-water-682",
@@ -243,6 +290,7 @@ public class MovieCrawler {
                 "https://momo.vn/cinema/furies-877",
                 "https://momo.vn/cinema/em-va-trinh-658",
                 "https://momo.vn/cinema/the-popes-exorcist-953"
+
 //                "https://momo.vn/cinema/puss-in-boots-the-last-wish-648",
 //                "https://momo.vn/cinema/the-batman-572",
 //                "https://momo.vn/cinema/spiderman-across-the-spiderverse-894",
@@ -256,7 +304,8 @@ public class MovieCrawler {
 //                "https://momo.vn/cinema/doraemon-nobita-no-little-wars-2021-673",
 //                "https://momo.vn/cinema/bo-gia-81",
 //                "https://momo.vn/cinema/thor-love-and-thunder-665",
-//                "https://momo.vn/cinema/emergency-declaration-790",
+//                "https://momo.vn/cinema/emergency-declaration-790"
+
 //                "https://momo.vn/cinema/the-ancestral-646",
 //                "https://momo.vn/cinema/the-flash-933",
 //                "https://momo.vn/cinema/one-piece-film-red-841",
@@ -382,7 +431,7 @@ public class MovieCrawler {
 //                "https://momo.vn/cinema/the-medium-574",
 //                "https://momo.vn/cinema/fast-feel-love-670",
 //                "https://momo.vn/cinema/the-matrix-resurrections-584",
-//                "https://momo.vn/cinema/sky-tour-339"
+//                "https://momo.vn/cinema/sky-tour-339",
 //                "https://momo.vn/cinema/vanity-fair-617",
 //                "https://momo.vn/cinema/honest-candidate-2-853",
 //                "https://momo.vn/cinema/haunted-universities-2nd-semester-788",
@@ -418,11 +467,11 @@ public class MovieCrawler {
 //                "https://momo.vn/cinema/dont-worry-darling-821",
 //                "https://momo.vn/cinema/detective-conan-the-scarlet-bullet-83",
 //                "https://momo.vn/cinema/nguoi-lang-nghe-loi-thi-tham-625",
-//                "https://momo.vn/cinema/vung-dat-cam-lang-2-397"
+//                "https://momo.vn/cinema/vung-dat-cam-lang-2-397",
 //                "https://momo.vn/cinema/nix-835",
 //                "https://momo.vn/cinema/evangelion-30-10-thrice-upon-a-time-thrice-upon-a-time-828",
 //                "https://momo.vn/cinema/amsterdam-784",
-//                "https://momo.vn/cinema/the-other-child-861"
+//                "https://momo.vn/cinema/the-other-child-861",
 //                "https://momo.vn/cinema/the-creeping-1000",
 //                "https://momo.vn/cinema/hypnotic-995"
         ));

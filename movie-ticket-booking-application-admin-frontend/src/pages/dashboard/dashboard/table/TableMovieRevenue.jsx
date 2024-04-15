@@ -1,17 +1,18 @@
 import { Table } from "antd";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { formatCurrency } from "../../../utils/functionUtils";
+import { formatCurrency } from "../../../../utils/functionUtils";
 
 const columns = [
     {
-        title: "Rạp chiếu",
+        title: "Tên phim",
         dataIndex: "",
-        key: "cinema",
+        key: "movie",
+        width: "55%",
         render: (text, record, index) => {
             return (
-                <RouterLink to={`/admin/cinemas/${record.cinemaId}/detail`}>
-                    {record.cinemaName}
+                <RouterLink to={`/admin/movies/${record.movieId}/detail`}>
+                    {record.movieName}
                 </RouterLink>
             );
         },
@@ -36,7 +37,7 @@ const columns = [
     },
 ];
 
-function TableCinemaRevenue({ data }) {
+function TableMovieRevenue({ data }) {
     return (
         <Table
             columns={columns}
@@ -47,4 +48,4 @@ function TableCinemaRevenue({ data }) {
     );
 }
 
-export default TableCinemaRevenue;
+export default TableMovieRevenue;

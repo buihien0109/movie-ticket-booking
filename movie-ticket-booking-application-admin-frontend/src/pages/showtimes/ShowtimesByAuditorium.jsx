@@ -1,11 +1,19 @@
 import { PlusOutlined } from '@ant-design/icons';
+import { DndContext } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import {
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy
+} from '@dnd-kit/sortable';
 import { Button, DatePicker, Form, message, Modal, Select, Space, Table, Tag, TimePicker, Typography } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useGetAllMoviesInScheduleQuery } from '../../app/services/movies.service';
 import { useCreateShowtimesMutation } from '../../app/services/showtimes.service';
-import { formatDate } from '../../utils/functionUtils';
+import { isSameDay } from '../../utils/functionUtils';
+import Row from './Row';
 
 const parseGraphicsType = (type) => {
     switch (type) {
@@ -33,8 +41,9 @@ function ShowtimesByAuditorium({ data, cinema, auditorium, dateSelected }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [timeRange, setTimeRange] = useState([]);
+    const [showtimes, setShowtimes] = useState(data.showtimes);
     const [form] = Form.useForm();
-    const { data: movies, isLoading: isFetchingMovies } = useGetAllMoviesInScheduleQuery();
+    const { data: movies, isLoading: isFetchingMovies } = useGetAllMoviesInScheduleQuery(dayjs(dateSelected).format("DD-MM-YYYY"));
     const [createShowtimes, { isLoading: isLoadingCreateShowtimes }] =
         useCreateShowtimesMutation();
 
@@ -45,8 +54,15 @@ function ShowtimesByAuditorium({ data, cinema, auditorium, dateSelected }) {
         });
     }, [dateSelected, timeRange])
 
+    useEffect(() => {
+        setShowtimes(data.showtimes);
+    }, [data])
+
 
     const columns = [
+        {
+            key: 'sort',
+        },
         {
             title: "Phim chiếu",
             dataIndex: "movie",
@@ -84,14 +100,6 @@ function ShowtimesByAuditorium({ data, cinema, auditorium, dateSelected }) {
             },
         },
         {
-            title: "Ngày chiếu",
-            dataIndex: "date",  // Sử dụng một trong các trường ngày để xác định phân loại
-            key: "date",
-            render: (text, record, index) => {
-                return formatDate(record.date);
-            },
-        },
-        {
             title: "Loại suất chiếu",
             dataIndex: "",  // Sử dụng một trong các trường ngày để xác định phân loại
             key: "type",
@@ -100,9 +108,9 @@ function ShowtimesByAuditorium({ data, cinema, auditorium, dateSelected }) {
                 const showDate = new Date(record.movie.showDate);
 
                 if (showDate > now) {
-                    return <Tag color="orange">Suất chiếu sớm</Tag>;
+                    return <Tag color="orange">Chiếu sớm</Tag>;
                 } else {
-                    return <Tag color="green">Suất chiếu theo lịch</Tag>;
+                    return <Tag color="green">Theo lịch</Tag>;
                 }
             },
         },
@@ -137,9 +145,9 @@ function ShowtimesByAuditorium({ data, cinema, auditorium, dateSelected }) {
     }
 
     const getClassification = (showDateStr) => {
-        const now = new Date();
+        const now = new Date(dateSelected);
         const showDate = new Date(showDateStr);
-        if (now < showDate) return 1;
+        if (now.getTime() < showDate.getTime()) return 1;
         return 2;
     };
 
@@ -177,7 +185,7 @@ function ShowtimesByAuditorium({ data, cinema, auditorium, dateSelected }) {
         setSelectedMovie(movie);
 
         // Lấy startTime từ hàm getLatestEndTime và thêm duration
-        let startTime = getLatestEndTime(data.showtimes);
+        let startTime = getLatestEndTime(showtimes);
         let endTime = dayjs(startTime).add(movie.duration, 'minutes');
 
         // Làm tròn endTime lên sao cho phút chia hết cho 5
@@ -232,38 +240,59 @@ function ShowtimesByAuditorium({ data, cinema, auditorium, dateSelected }) {
     const getGraphicsTypeOptions = (movie) => getOptions(movie, 'graphics', graphicsMapping);
     const getTranslationTypeOptions = (movie) => getOptions(movie, 'translations', translationMapping);
 
+    const onDragEnd = ({ active, over }) => {
+        if (active.id !== over?.id) {
+            setShowtimes((previous) => {
+                const activeIndex = previous.findIndex((i) => i.id === active.id);
+                const overIndex = previous.findIndex((i) => i.id === over?.id);
+                return arrayMove(previous, activeIndex, overIndex);
+            });
+        }
+        message.warning("Tính năng đang trong quá trình phát triển!. Vui lòng thử lại sau.")
+    };
     return (
         <>
-            <Table
-                style={{ marginBottom: 30 }}
-                columns={columns}
-                dataSource={data.showtimes}
-                pagination={false}
-                rowKey="id"
-                title={() => <Typography.Title level={5} style={{ color: "#722ed1" }}>{data.auditorium.name}</Typography.Title>}
-                footer={() => {
-                    // TODO: Kiểm tra ngày đang chọn có nhỏ hơn ngày hiện tại không
-                    // Nếu ngày đang chọn nhỏ hơn ngày hiện tại thì không cho thêm lịch chiếu
-                    const now = new Date(dayjs().format("DD/MM/YYYY"));
-                    const dateSelectedObj = new Date(dayjs(new Date(dateSelected)).format("DD/MM/YYYY"));
+            <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
+                <SortableContext
+                    // rowKey array
+                    items={showtimes.map((i) => i.id)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    <Table
+                        components={{
+                            body: {
+                                row: Row,
+                            },
+                        }}
+                        style={{ marginBottom: 30, position: "relative", zIndex: 1 }}
+                        columns={columns}
+                        dataSource={showtimes}
+                        pagination={false}
+                        rowKey="id"
+                        title={() => <Typography.Title level={5} style={{ color: "#722ed1" }}>{data.auditorium.name}</Typography.Title>}
+                        footer={() => {
+                            const now = new Date();
+                            const dateSelectedObj = new Date(dateSelected);
 
-                    // console.log({ dateSelectedObj, dateSelected, type: typeof dateSelected })
-                    // console.log(dateSelectedObj.getTime(), now.getTime());
-                    // console.log(dateSelectedObj.getTime() < now.getTime());
-                    if (dateSelectedObj.getTime() < now.getTime()) return null;
+                            if (isSameDay(now, dateSelectedObj) || dateSelectedObj.getTime() >= now.getTime()) {
+                                return (
+                                    <Button
+                                        style={{ backgroundColor: "rgb(60, 141, 188)" }}
+                                        type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => setIsModalOpen(true)}
+                                    >
+                                        Thêm lịch chiếu
+                                    </Button>
+                                )
+                            } else {
+                                return null;
+                            }
+                        }}
+                    />
+                </SortableContext>
+            </DndContext>
 
-                    return (
-                        <Button
-                            style={{ backgroundColor: "rgb(60, 141, 188)" }}
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={() => setIsModalOpen(true)}
-                        >
-                            Thêm lịch chiếu
-                        </Button>
-                    )
-                }}
-            />
 
             {isModalOpen && (
                 <Modal

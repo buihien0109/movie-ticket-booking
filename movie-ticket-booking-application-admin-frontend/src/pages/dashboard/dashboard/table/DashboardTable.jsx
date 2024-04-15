@@ -11,14 +11,14 @@ function DashboardTable({ movieRevenues, cinemaRevenues }) {
             <Col span={12}>
                 <Flex justify='space-between' align='center' style={{ marginBottom: 10 }}>
                     <Typography.Title level={4} style={{ marginBottom: 0 }}>Doanh thu theo phim</Typography.Title>
-                    <RouterLink to="/admin/blogs">Xem tất cả</RouterLink>
+                    <RouterLink to="/admin/revenue/movie">Xem tất cả</RouterLink>
                 </Flex>
                 <TableMovieRevenue data={movieRevenues} />
             </Col>
             <Col span={12}>
                 <Flex justify='space-between' align='center' style={{ marginBottom: 10 }}>
                     <Typography.Title level={4} style={{ marginBottom: 0 }}>Doanh thu theo rạp</Typography.Title>
-                    <RouterLink to="/admin/users">Xem tất cả</RouterLink>
+                    <RouterLink to="/admin/revenue/cinema">Xem tất cả</RouterLink>
                 </Flex>
                 <TableCinemaRevenue data={cinemaRevenues} />
             </Col>

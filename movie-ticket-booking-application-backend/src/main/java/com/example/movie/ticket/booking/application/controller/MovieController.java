@@ -22,8 +22,8 @@ public class MovieController {
     }
 
     @GetMapping("/in-schedule")
-    public ResponseEntity<?> getAllMoviesInSchedule() {
-        return ResponseEntity.ok(movieService.getAllMoviesInSchedule());
+    public ResponseEntity<?> getAllMoviesInSchedule(@RequestParam String date) {
+        return ResponseEntity.ok(movieService.getAllMoviesInSchedule(date));
     }
 
     @GetMapping("/{id}")

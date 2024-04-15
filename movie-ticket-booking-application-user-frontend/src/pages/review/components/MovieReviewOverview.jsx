@@ -6,7 +6,7 @@ import ModalTrailer from '../../../components/modal/trailer/ModalTrailer';
 
 function MoviePoster({ movie, handleOpen }) {
     return (
-        <div className="z-1 relative w-24 shrink-0 sm:w-28 md:mx-auto lg:w-48">
+        <div className="z-1 relative md:mx-auto">
             <div
                 className="overlay pointer-events-none absolute inset-0 z-20 select-none bg-transparent  px-2 py-2">
                 <div className="flex flex-row flex-nowrap space-x-2">

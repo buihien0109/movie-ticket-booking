@@ -11,6 +11,6 @@ import lombok.experimental.FieldDefaults;
 public class CinemaRevenueDto {
     Integer cinemaId;
     String cinemaName;
-    Long totalTickets;
-    Long totalRevenue;
+    Integer totalTickets;
+    Integer totalRevenue;
 }

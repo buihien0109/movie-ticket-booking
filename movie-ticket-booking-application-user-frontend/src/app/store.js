@@ -17,6 +17,7 @@ import searchReducer from "./slices/search.slice";
 import showtimesReducer from "./slices/showtimes.slice";
 import { userApi } from "./services/user.api";
 import { orderApi } from "./services/order.api";
+import { couponApi } from "./services/coupon.api";
 
 const store = configureStore({
     reducer: {
@@ -33,6 +34,7 @@ const store = configureStore({
         [reservationApi.reducerPath]: reservationApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
         [orderApi.reducerPath]: orderApi.reducer,
+        [couponApi.reducerPath]: couponApi.reducer,
         search: searchReducer,
         showtimes: showtimesReducer,
         cinemas: cinemaReducer,
@@ -54,6 +56,7 @@ const store = configureStore({
             reservationApi.middleware,
             userApi.middleware,
             orderApi.middleware,
+            couponApi.middleware,
         ),
 });
 

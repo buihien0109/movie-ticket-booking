@@ -26,21 +26,20 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final SeatRepository seatRepository;
     private final AdditionalServiceRepository additionalServiceRepository;
-    private final OrderTicketItemRepository orderTicketItemRepository;
-    private final OrderServiceItemRepository orderServiceItemRepository;
     private final ShowtimeRepository showtimeRepository;
     private final SeatReservationRepository seatReservationRepository;
+    private final CouponRepository couponRepository;
     private final VNPayService vnpayService;
     private final ImageService imageService;
     private final QRCodeService qrCodeService;
 
     public List<Order> getOrdersByUserId(Integer userId) {
-        return orderRepository.findByUser_Id(userId);
+        return orderRepository.findByUser_IdOrderByCreatedAtDesc(userId);
     }
 
     public List<Order> getOrdersByCurrentUser() {
         User currentUser = SecurityUtils.getCurrentUserLogin();
-        return orderRepository.findByUser_IdAndStatus(currentUser.getId(), OrderStatus.CONFIRMED);
+        return orderRepository.findByUser_IdAndStatusOrderByCreatedAtDesc(currentUser.getId(), OrderStatus.CONFIRMED);
     }
 
     public List<Order> getAllOrders() {
@@ -60,12 +59,24 @@ public class OrderService {
         Showtime showtime = showtimeRepository.findById(request.getShowtimeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy suất chiếu với id " + request.getShowtimeId()));
 
+        // Kiểm tra mã giảm giá
+        Coupon coupon = null;
+        if (request.getCouponCode() != null) {
+            coupon = couponRepository.findByCode(request.getCouponCode())
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy mã giảm giá " + request.getCouponCode()));
+
+            // update used count
+            coupon.setUsed(coupon.getUsed() + 1);
+            couponRepository.save(coupon);
+        }
+
         // Tạo đơn hàng
         Order order = Order.builder()
                 .id(generateOrderId())
                 .user(currentUser)
                 .showtime(showtime)
                 .status(OrderStatus.PENDING)
+                .discount(coupon != null ? coupon.getDiscount() : null)
                 .ticketItems(new ArrayList<>())
                 .serviceItems(new ArrayList<>())
                 .build();

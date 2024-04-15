@@ -157,6 +157,18 @@ function PaymentResult() {
                                                 <div>
                                                     <div className="text-gray-800"><b>Tạm tính</b></div>
                                                 </div>
+                                                <div className="text-gray-800"><b>{formatCurrency(order.tempPrice)}đ</b></div>
+                                            </li>
+                                            <li className="flex items-end justify-between space-x-10">
+                                                <div>
+                                                    <div className="text-gray-800"><b>Giảm giá {order.discount ? `(${order.discount}%)` : ""}</b></div>
+                                                </div>
+                                                <div className="text-gray-800"><b>{formatCurrency(order.discountPrice)}đ</b></div>
+                                            </li>
+                                            <li className="flex items-end justify-between space-x-10">
+                                                <div>
+                                                    <div className="text-gray-800"><b>Thành tiền</b></div>
+                                                </div>
                                                 <div className="text-gray-800"><b>{formatCurrency(order.totalPrice)}đ</b></div>
                                             </li>
                                         </ul>

@@ -7,9 +7,9 @@ import { formatCurrency, formatDate } from "../../../utils/functionUtils";
 const parseOrderStatus = (status) => {
     switch (status) {
         case "PENDING":
-            return <Tag color="warning">Chờ xác nhận</Tag>;
+            return <Tag color="warning">Chờ thanh toán</Tag>;
         case "CONFIRMED":
-            return <Tag color="success">Đã xác nhận</Tag>;
+            return <Tag color="success">Đã thanh toán</Tag>;
         case "CANCELLED":
             return <Tag color="red">Đã hủy</Tag>;
         default:
@@ -86,7 +86,7 @@ const MovieTable = ({ data }) => {
             },
         },
         {
-            title: "Ngày tạo",
+            title: "Ngày đặt",
             dataIndex: "createdAt",
             key: "createdAt",
             sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
