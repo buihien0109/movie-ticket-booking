@@ -8,7 +8,6 @@ function Seat({ seat, isLastRow, auditorium }) {
     const [updateSeat, { isLoading }] = useUpdateSeatMutation();
 
     const onFinish = (values) => {
-        console.log(values);
         updateSeat({ id: seat.id, ...seat, ...values, auditoriumId: auditorium.id })
             .unwrap()
             .then((data) => {

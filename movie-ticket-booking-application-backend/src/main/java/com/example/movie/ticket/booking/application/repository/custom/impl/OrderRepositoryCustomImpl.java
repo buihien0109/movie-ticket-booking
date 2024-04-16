@@ -1,19 +1,23 @@
 package com.example.movie.ticket.booking.application.repository.custom.impl;
 
-import com.example.movie.ticket.booking.application.entity.Movie;
 import com.example.movie.ticket.booking.application.entity.Order;
 import com.example.movie.ticket.booking.application.model.dto.CinemaRevenueDto;
 import com.example.movie.ticket.booking.application.model.dto.MovieRevenueDto;
+import com.example.movie.ticket.booking.application.model.dto.RevenueDto;
 import com.example.movie.ticket.booking.application.repository.custom.OrderRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Repository
@@ -74,6 +78,47 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         }
 
         return new ArrayList<>(cinemaRevenueMap.values());
+    }
+
+    @Override
+    public List<RevenueDto> findMonthlyRevenue() {
+        LocalDate today = LocalDate.now();
+        List<LocalDate> lastFiveMonthsStarts = IntStream.rangeClosed(0, 4)
+                .mapToObj(i -> today.minusMonths(i).withDayOfMonth(1))
+                .toList();
+
+        return lastFiveMonthsStarts.stream()
+                .map(this::calculateRevenueForMonth)
+                .sorted(Comparator.comparing(RevenueDto::getYear).thenComparing(RevenueDto::getMonth))
+                .collect(Collectors.toList());
+    }
+
+    private RevenueDto calculateRevenueForMonth(LocalDate monthStart) {
+        LocalDate monthEnd = monthStart.plusMonths(1).minusDays(1);
+        String sql = "SELECT EXTRACT(MONTH FROM o.created_at) AS month, " +
+                "EXTRACT(YEAR FROM o.created_at) AS year, " +
+                "SUM(((SELECT SUM(oti.price) FROM order_ticket_items oti WHERE oti.order_id = o.id) + " +
+                "(SELECT SUM(osi.price * osi.quantity) FROM order_service_items osi WHERE osi.order_id = o.id)) * " +
+                "(1 - COALESCE(o.discount, 0) / 100.0)) AS revenue " +
+                "FROM orders o " +
+                "WHERE o.created_at BETWEEN ?1 AND ?2 " +
+                "AND o.status = 'CONFIRMED' " +
+                "GROUP BY EXTRACT(YEAR FROM o.created_at), EXTRACT(MONTH FROM o.created_at)";
+
+        List<Object[]> results = entityManager.createNativeQuery(sql)
+                .setParameter(1, java.sql.Date.valueOf(monthStart))
+                .setParameter(2, java.sql.Date.valueOf(monthEnd))
+                .getResultList();
+
+        if (results.isEmpty()) {
+            return new RevenueDto(monthStart.getMonthValue(), monthStart.getYear(), 0);
+        } else {
+            Object[] result = results.get(0);
+            int month = ((Number) result[0]).intValue();
+            int year = ((Number) result[1]).intValue();
+            long revenue = ((Number) result[2]).longValue();
+            return new RevenueDto(month, year, revenue);
+        }
     }
 
 }

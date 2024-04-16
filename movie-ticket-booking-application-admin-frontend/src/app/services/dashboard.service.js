@@ -84,11 +84,10 @@ export const dashboardApi = createApi({
                 return {
                     url: `revenue/cinema/export`,
                     method: "GET",
-                    params
+                    params,
+                    responseHandler: "blob"
                 }
-
-            },
-            responseHandler: 'blob'
+            }
         })
     }),
 

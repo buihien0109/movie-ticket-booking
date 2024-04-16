@@ -59,7 +59,7 @@ const CinemaDetail = () => {
         message.success("Cập nhật rạp chiếu thành công!");
       })
       .catch((error) => {
-        console.log("error", error);
+        console.log(error);
         message.error(error.data.message);
       });
   };

@@ -42,7 +42,7 @@ function TableMovieRevenue({ data }) {
         <Table
             columns={columns}
             dataSource={data}
-            rowKey={(record) => record.id}
+            rowKey={(record) => record.movieId}
             pagination={{ pageSize: 5 }}
         />
     );

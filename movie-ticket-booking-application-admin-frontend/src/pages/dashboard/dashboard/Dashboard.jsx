@@ -34,9 +34,12 @@ const Dashboard = () => {
                 <DashboardSummary
                     revenueToday={data?.revenueToday}
                     countLatestUsers={data?.countLatestUsers}
+                    totalTicketsCurrentMonth={data?.totalTicketsCurrentMonth}
+                    revenueCurrentMonth={data?.revenueCurrentMonth}
                 />
                 <ViewChart
                     topViewBlogs={data?.topViewBlogs}
+                    revenueByMonth={data?.revenueByMonth}
                 />
                 <DashboardTable
                     movieRevenues={data?.movieRevenues}

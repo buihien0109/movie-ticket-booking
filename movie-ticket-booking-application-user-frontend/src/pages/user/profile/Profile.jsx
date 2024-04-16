@@ -51,7 +51,6 @@ function Profile() {
         updateAvatar(formData)
             .unwrap()
             .then((res) => {
-                console.log(res);
                 toast.success("Cập nhật ảnh đại diện thành công");
                 dispatch(updateAuth({ avatar: res.url }))
             })

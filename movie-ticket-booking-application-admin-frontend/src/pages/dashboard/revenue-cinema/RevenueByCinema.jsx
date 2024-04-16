@@ -1,10 +1,12 @@
 import { FileExcelOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, DatePicker, Form, message, Space, Spin, theme } from "antd";
+import { Button, Col, DatePicker, Form, message, Row, Space, Spin, theme } from "antd";
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useLazyGetRevenueByCinemaQuery } from "../../../app/services/dashboard.service";
+import { useLazyExportRevenueByCinemaQuery, useLazyGetRevenueByCinemaQuery } from "../../../app/services/dashboard.service";
 import AppBreadCrumb from "../../../components/layout/AppBreadCrumb";
 import RevenueByCinemaTable from "./RevenueByCinemaTable";
+import RevenueChart from "./RevenueChart";
+import TicketChart from "./TicketChart";
 
 const breadcrumb = [
     { label: "Doanh thu theo rạp", href: "/admin/revenue/cinema" },
@@ -18,6 +20,7 @@ const RevenueByCinema = () => {
     const [endDate, setEndDate] = useState(null);
 
     const [getRevenueByCinema, { data, isLoading, isFetching }] = useLazyGetRevenueByCinemaQuery();
+    const [exportRevenueByCinema] = useLazyExportRevenueByCinemaQuery();
 
     useEffect(() => {
         getRevenueByCinema({ startDate, endDate });
@@ -28,7 +31,20 @@ const RevenueByCinema = () => {
     }
 
     const handleExportExcel = () => {
-        message.warning("Chức năng đang phát triển");
+        exportRevenueByCinema({ startDate, endDate })
+            .unwrap()
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "reports.xlsx");
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch((error) => {
+                console.log(error);
+                message.error("Xuất báo cáo thất bại");
+            });
     };
 
     const onFinish = (values) => {
@@ -87,6 +103,15 @@ const RevenueByCinema = () => {
                         Xuất báo cáo
                     </Button>
                 </Space>
+
+                <Row gutter={[16, 16]}>
+                    <Col span={12}>
+                        <TicketChart data={data} />
+                    </Col>
+                    <Col span={12}>
+                        <RevenueChart data={data} />
+                    </Col>
+                </Row>
 
                 <RevenueByCinemaTable data={data} />
             </div>

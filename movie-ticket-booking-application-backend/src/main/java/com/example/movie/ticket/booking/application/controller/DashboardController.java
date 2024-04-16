@@ -42,7 +42,7 @@ public class DashboardController {
                                                 @RequestParam(required = false) String endDate) {
         byte[] data = reportService.exportRevenueByCinema(startDate, endDate);
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=report.xlsx")
+                .header("Content-Disposition", "attachment; filename=reports_cinema.xlsx")
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(data);
     }
@@ -52,7 +52,7 @@ public class DashboardController {
                                                 @RequestParam(required = false) String endDate) {
         byte[] data = reportService.exportRevenueByMovie(startDate, endDate);
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=report.xlsx")
+                .header("Content-Disposition", "attachment; filename=reports_movie.xlsx")
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(data);
     }

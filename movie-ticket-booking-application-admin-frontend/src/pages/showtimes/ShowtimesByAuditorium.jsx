@@ -104,10 +104,10 @@ function ShowtimesByAuditorium({ data, cinema, auditorium, dateSelected }) {
             dataIndex: "",  // Sử dụng một trong các trường ngày để xác định phân loại
             key: "type",
             render: (text, record, index) => {
-                const now = new Date();
+                const dateSelectedObj = new Date(dateSelected);
                 const showDate = new Date(record.movie.showDate);
 
-                if (showDate > now) {
+                if (showDate.getTime() > dateSelectedObj.getTime()) {
                     return <Tag color="orange">Chiếu sớm</Tag>;
                 } else {
                     return <Tag color="green">Theo lịch</Tag>;

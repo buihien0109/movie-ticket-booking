@@ -3,6 +3,7 @@ package com.example.movie.ticket.booking.application.service;
 import com.example.movie.ticket.booking.application.model.dto.BlogViewDto;
 import com.example.movie.ticket.booking.application.model.dto.CinemaRevenueDto;
 import com.example.movie.ticket.booking.application.model.dto.MovieRevenueDto;
+import com.example.movie.ticket.booking.application.model.dto.RevenueDto;
 import com.example.movie.ticket.booking.application.repository.BlogRepository;
 import com.example.movie.ticket.booking.application.repository.OrderRepository;
 import com.example.movie.ticket.booking.application.repository.UserRepository;
@@ -55,7 +56,14 @@ public class DashboardService {
         map.put("movieRevenues", getMovieRevenues(start, end));
         map.put("cinemaRevenues", getCinemaRevenues(start, end));
         map.put("revenueToday", getRevenueToday());
+        map.put("revenueByMonth", getRevenueByMonth());
+        map.put("revenueCurrentMonth", getRevenueCurrentMonth());
+        map.put("totalTicketsCurrentMonth", getTotalTicketsCurrentMonth());
         return map;
+    }
+
+    private List<RevenueDto> getRevenueByMonth() {
+       return orderRepository.findMonthlyRevenue();
     }
 
     private long getRevenueToday() {
@@ -63,6 +71,20 @@ public class DashboardService {
         LocalDateTime end = DateUtils.atEndOfDay(LocalDate.now());
         List<MovieRevenueDto> movieRevenues = orderRepository.findMovieRevenues(start, end);
         return movieRevenues.stream().mapToLong(MovieRevenueDto::getTotalRevenue).sum();
+    }
+
+    private long getRevenueCurrentMonth() {
+        LocalDateTime start = DateUtils.atStartOfDay(LocalDate.now().withDayOfMonth(1));
+        LocalDateTime end = DateUtils.atEndOfDay(LocalDate.now());
+        List<MovieRevenueDto> movieRevenues = orderRepository.findMovieRevenues(start, end);
+        return movieRevenues.stream().mapToLong(MovieRevenueDto::getTotalRevenue).sum();
+    }
+
+    private long getTotalTicketsCurrentMonth() {
+        LocalDateTime start = DateUtils.atStartOfDay(LocalDate.now().withDayOfMonth(1));
+        LocalDateTime end = DateUtils.atEndOfDay(LocalDate.now());
+        List<MovieRevenueDto> movieRevenues = orderRepository.findMovieRevenues(start, end);
+        return movieRevenues.stream().mapToLong(MovieRevenueDto::getTotalTickets).sum();
     }
 
     public List<MovieRevenueDto> getMovieRevenues(LocalDate startDate, LocalDate endDate) {

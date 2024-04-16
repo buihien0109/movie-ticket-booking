@@ -19,7 +19,6 @@ function ForgotPasswordModal({ open, handleClose }) {
     });
 
     const onSubmit = data => {
-        console.log(data)
         forgotPassword(data)
             .unwrap()
             .then((res) => {

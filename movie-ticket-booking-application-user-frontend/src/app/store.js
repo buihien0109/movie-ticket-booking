@@ -18,6 +18,7 @@ import showtimesReducer from "./slices/showtimes.slice";
 import { userApi } from "./services/user.api";
 import { orderApi } from "./services/order.api";
 import { couponApi } from "./services/coupon.api";
+import { checkStatusMiddleware } from "./middlewares/middlewares";
 
 const store = configureStore({
     reducer: {
@@ -57,6 +58,7 @@ const store = configureStore({
             userApi.middleware,
             orderApi.middleware,
             couponApi.middleware,
+            checkStatusMiddleware
         ),
 });
 

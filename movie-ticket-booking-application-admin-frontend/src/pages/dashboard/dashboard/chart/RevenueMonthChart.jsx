@@ -29,18 +29,18 @@ export const options = {
     },
     title: {
       display: true,
-      text: 'Lượt xem theo tháng',
+      text: 'Doanh thu theo tháng',
     },
   },
 };
 
-function ViewMonthChart(props) {
+function RevenueMonthChart(props) {
   const data = {
     labels: props.data.map((v) => `${v?.month}/${v?.year}`),
     datasets: [
       {
-        label: 'Lượt xem',
-        data: props.data.map((v) => v?.viewCount),
+        label: 'Doanh thu',
+        data: props.data.map((v) => v?.revenue),
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
       }
@@ -49,4 +49,4 @@ function ViewMonthChart(props) {
   return <Line options={options} data={data} />;
 }
 
-export default ViewMonthChart;
+export default RevenueMonthChart;

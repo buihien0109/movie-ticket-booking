@@ -66,13 +66,11 @@ function ModalOrder(props) {
     }
 
     const checkCoupon = (e) => {
-        console.log(e.target.value);
         if (e.key === "Enter") {
             if (couponCode.trim().length > 0) {
                 checkCouponValid(couponCode)
                     .unwrap()
                     .then((res) => {
-                        console.log(res);
                         toast.success("Áp dụng mã giảm giá thành công")
                         setCoupon({
                             code: couponCode,

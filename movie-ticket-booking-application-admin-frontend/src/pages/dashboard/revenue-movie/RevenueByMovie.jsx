@@ -1,10 +1,12 @@
 import { FileExcelOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, DatePicker, Form, message, Space, Spin, theme } from "antd";
+import { Button, Col, DatePicker, Form, message, Row, Space, Spin, theme } from "antd";
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useLazyExportRevenueByMovieQuery, useLazyGetRevenueByMovieQuery } from "../../../app/services/dashboard.service";
 import AppBreadCrumb from "../../../components/layout/AppBreadCrumb";
 import RevenueByMovieTable from "./RevenueByMovieTable";
+import RevenueChart from "./RevenueChart";
+import TicketChart from "./TicketChart";
 
 const breadcrumb = [
     { label: "Doanh thu theo phim", href: "/admin/revenue/movie" },
@@ -101,6 +103,15 @@ const RevenueByMovie = () => {
                         Xuất báo cáo
                     </Button>
                 </Space>
+
+                <Row gutter={[16, 16]}>
+                    <Col span={12}>
+                        <TicketChart data={data} />
+                    </Col>
+                    <Col span={12}>
+                        <RevenueChart data={data} />
+                    </Col>
+                </Row>
 
                 <RevenueByMovieTable data={data} />
             </div>

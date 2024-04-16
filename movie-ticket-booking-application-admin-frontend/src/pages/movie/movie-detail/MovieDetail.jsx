@@ -118,7 +118,7 @@ const MovieDetail = () => {
         message.success("Cập nhật phim thành công!");
       })
       .catch((error) => {
-        console.log("error", error);
+        console.log(error);
         message.error(error.data.message);
       });
   };

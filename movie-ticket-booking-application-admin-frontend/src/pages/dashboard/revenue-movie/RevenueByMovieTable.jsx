@@ -46,7 +46,8 @@ function RevenueByMovieTable({ data }) {
     <Table
       columns={columns}
       dataSource={data}
-      rowKey={(record) => record.id}
+      rowKey={(record) => record.movieId}
+      style={{ marginTop: 20 }}
     />
   );
 }
