@@ -10,19 +10,24 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/showtimes")
+@RequestMapping("api")
 @RequiredArgsConstructor
 public class ShowtimeController {
     private final ShowtimeService showtimeService;
 
-    @GetMapping
+    @GetMapping("/public/showtimes/cinemas")
+    ResponseEntity<?> getAllShowtimesByCinema(@RequestParam Integer cinemaId, @RequestParam String showDate) {
+        return ResponseEntity.ok(showtimeService.getAllShowtimesByCinema(cinemaId, showDate));
+    }
+
+    @GetMapping("/admin/showtimes")
     public ResponseEntity<?> getAllShowtimes(@RequestParam(required = false) Integer cinemaId,
                                              @RequestParam(required = false) Integer auditoriumId,
                                              @RequestParam String showDate) {
         return ResponseEntity.ok(showtimeService.getAllShowTimes(cinemaId, auditoriumId, showDate));
     }
 
-    @PostMapping
+    @PostMapping("/admin/showtimes")
     public ResponseEntity<?> createShowtimes(@Valid @RequestBody UpsertShowtimeRequest request) {
         return ResponseEntity.ok(showtimeService.createShowtimes(request));
     }

@@ -10,37 +10,75 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/blogs")
+@RequestMapping("api")
 @RequiredArgsConstructor
 public class BlogController {
     private final BlogService blogService;
 
-    @GetMapping
+    @GetMapping("/public/blogs")
+    public ResponseEntity<?> getAllBlogs(@RequestParam(required = false) String type,
+                                         @RequestParam(required = false, defaultValue = "1") Integer page,
+                                         @RequestParam(required = false, defaultValue = "10") Integer limit) {
+        return ResponseEntity.ok(blogService.getAllBlogs(type, page, limit));
+    }
+
+    @GetMapping("/public/blogs/load-more")
+    public ResponseEntity<?> loadMoreBlogs(@RequestParam(required = false) String type,
+                                           @RequestParam(required = false, defaultValue = "1") Integer page,
+                                           @RequestParam(required = false, defaultValue = "10") Integer limit) {
+        return ResponseEntity.ok(blogService.getAllBlogs(type, page, limit));
+    }
+
+    @GetMapping("/public/blogs/latest")
+    public ResponseEntity<?> getBlogsLatest(@RequestParam(required = false) String type,
+                                            @RequestParam(required = false, defaultValue = "1") Integer page,
+                                            @RequestParam(required = false, defaultValue = "10") Integer limit) {
+        return ResponseEntity.ok(blogService.getBlogsLatest(type, page, limit));
+    }
+
+    @GetMapping("/public/blogs/most-view")
+    public ResponseEntity<?> getMostViewBlogs(@RequestParam(required = false) String type,
+                                              @RequestParam(required = false, defaultValue = "5") Integer limit) {
+        return ResponseEntity.ok(blogService.getMostViewBlogs(type, limit));
+    }
+
+    @GetMapping("/public/blogs/{id}/recommend")
+    public ResponseEntity<?> getRecommendBlogs(@RequestParam(required = false, defaultValue = "5") Integer limit,
+                                               @PathVariable Integer id) {
+        return ResponseEntity.ok(blogService.getRecommendBlogs(id, limit));
+    }
+
+    @GetMapping("/public/blogs/{id}/{slug}")
+    public ResponseEntity<?> getBlogDetail(@PathVariable Integer id, @PathVariable String slug) {
+        return ResponseEntity.ok(blogService.getBlogDetail(id, slug));
+    }
+
+    @GetMapping("/admin/blogs")
     public ResponseEntity<?> getAllBlog() {
         return ResponseEntity.ok(blogService.getAllBlog());
     }
 
-    @GetMapping("/own-blogs")
+    @GetMapping("/admin/blogs/own-blogs")
     public ResponseEntity<?> getOwnBlogs() {
         return ResponseEntity.ok(blogService.getOwnBlogs());
     }
 
-    @PostMapping
+    @PostMapping("/admin/blogs")
     public ResponseEntity<?> createBlog(@RequestBody UpsertBlogRequest request) {
         return new ResponseEntity<>(blogService.createBlog(request), HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/admin/blogs/{id}")
     public ResponseEntity<?> getBlogById(@PathVariable Integer id) {
         return ResponseEntity.ok(blogService.getBlogById(id));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/admin/blogs/{id}")
     public ResponseEntity<?> updateBlog(@PathVariable Integer id, @RequestBody UpsertBlogRequest request) {
         return ResponseEntity.ok(blogService.updateBlog(id, request));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/admin/blogs/{id}")
     public ResponseEntity<?> deleteBlog(@PathVariable Integer id) {
         blogService.deleteBlog(id);
         return ResponseEntity.noContent().build();

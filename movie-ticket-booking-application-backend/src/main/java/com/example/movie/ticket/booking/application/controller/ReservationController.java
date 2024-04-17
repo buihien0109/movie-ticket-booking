@@ -1,4 +1,4 @@
-package com.example.movie.ticket.booking.application.controller.web;
+package com.example.movie.ticket.booking.application.controller;
 
 import com.example.movie.ticket.booking.application.model.request.SeatReservationRequest;
 import com.example.movie.ticket.booking.application.service.ReservationService;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/seat-reservations")
 @RequiredArgsConstructor
-public class ReservationWebController {
+public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping("/book")

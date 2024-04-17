@@ -1,6 +1,7 @@
 package com.example.movie.ticket.booking.application.controller;
 
 import com.example.movie.ticket.booking.application.model.request.UpsertReviewRequest;
+import com.example.movie.ticket.booking.application.service.MovieService;
 import com.example.movie.ticket.booking.application.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
+    private final MovieService movieService;
+
+    @GetMapping("/public/reviews")
+    public ResponseEntity<?> getAllReviewsOfMovies(@RequestParam(required = false, defaultValue = "1") Integer page,
+                                                   @RequestParam(required = false, defaultValue = "6") Integer limit) {
+        return ResponseEntity.ok(movieService.getAllReviewsOfMovies(page, limit));
+    }
 
     @PostMapping("/reviews")
     public ResponseEntity<?> createReview(@Valid @ModelAttribute UpsertReviewRequest request,
@@ -38,7 +46,8 @@ public class ReviewController {
     }
 
     @PutMapping("/admin/reviews/{id}")
-    public ResponseEntity<?> adminUpdateReview(@Valid @RequestBody UpsertReviewRequest request, @PathVariable Integer id) {
+    public ResponseEntity<?> adminUpdateReview(@Valid @RequestBody UpsertReviewRequest request,
+                                               @PathVariable Integer id) {
         return ResponseEntity.ok(reviewService.adminUpdateReview(request, id));
     }
 

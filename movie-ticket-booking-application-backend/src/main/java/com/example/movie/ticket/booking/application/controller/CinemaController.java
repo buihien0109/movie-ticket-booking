@@ -12,33 +12,38 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("api/admin/cinemas")
+@RequestMapping("api")
 @RequiredArgsConstructor
 public class CinemaController {
     private final CinemaService cinemaService;
     private final AuditoriumService auditoriumService;
 
-    @GetMapping
+    @GetMapping("/public/cinemas")
     public ResponseEntity<?> getAllCinemas() {
         return ResponseEntity.ok(cinemaService.getAllCinemas());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/admin/cinemas")
+    public ResponseEntity<?> getAllCinemasByAdmin() {
+        return ResponseEntity.ok(cinemaService.getAllCinemas());
+    }
+
+    @GetMapping("/admin/cinemas/{id}")
     public ResponseEntity<?> getCinemaById(@PathVariable Integer id) {
         return ResponseEntity.ok(cinemaService.getCinemaById(id));
     }
 
-    @PostMapping
+    @PostMapping("/admin/cinemas")
     public ResponseEntity<?> createCinema(@Valid @RequestBody UpsertCinemaRequest request) {
         return new ResponseEntity<>(cinemaService.saveCinema(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/cinemas/{id}")
     public ResponseEntity<?> updateCinema(@PathVariable Integer id, @Valid @RequestBody UpsertCinemaRequest request) {
         return ResponseEntity.ok(cinemaService.updateCinema(id, request));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/cinemas/{id}")
     public ResponseEntity<?> deleteCinema(@PathVariable Integer id) {
         cinemaService.deleteCinema(id);
         return ResponseEntity.noContent().build();
