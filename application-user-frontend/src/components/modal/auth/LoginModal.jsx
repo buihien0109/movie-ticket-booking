@@ -1,10 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { useLoginMutation } from '../../../app/services/auth.api';
 import ModalBase from '../base/ModalBase';
+import { EyeIcon, EyeOffIcon } from '../../icon/Icon';
 
 const schema = yup.object({
     email: yup.string()
@@ -18,6 +19,14 @@ function LoginModal({ open, handleClose, handleForgotPassword, handleRegister })
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
     });
+
+    const [showPassword, setShowPassword] = useState({
+        password: false,
+    });
+
+    const togglePasswordVisibility = (field) => {
+        setShowPassword({ ...showPassword, [field]: !showPassword[field] });
+    };
 
     const onSubmit = data => {
         login(data).unwrap()
@@ -74,19 +83,32 @@ function LoginModal({ open, handleClose, handleForgotPassword, handleRegister })
                                 name="email"
                                 id="email"
                                 {...register('email')}
+                                placeholder="Enter email..."
                                 className="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
                             />
                             <p className="text-red-500 text-xs mt-1">{errors.email?.message}</p>
                         </div>
                         <div>
                             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Mật khẩu</label>
-                            <input
-                                type="password"
-                                name="password"
-                                id="password"
-                                {...register('password')}
-                                className="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword.password ? 'text' : 'password'}
+                                    name="password"
+                                    id="password"
+                                    {...register('password')}
+                                    placeholder="Enter password..."
+                                    className="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 pe-11"
+                                />
+                                <button
+                                    onClick={() => togglePasswordVisibility('password')}
+                                    type="button"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                                    title="Show password"
+                                >
+                                    {showPassword.password ? <EyeOffIcon /> : <EyeIcon />}
+                                </button>
+                            </div>
+
                             <p className="text-red-500 text-xs mt-1">{errors.password?.message}</p>
                         </div>
                         <div className="flex items-center justify-end">

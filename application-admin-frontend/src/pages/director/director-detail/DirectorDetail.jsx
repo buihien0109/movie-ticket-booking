@@ -1,31 +1,32 @@
 import { DeleteOutlined, LeftOutlined, SaveOutlined } from "@ant-design/icons";
 import {
+  Avatar,
   Button,
   Col,
+  DatePicker,
   Flex,
   Form,
   Input,
-  InputNumber,
   Modal,
   Pagination,
   Row,
-  Select,
   Space,
   Spin,
   Upload,
   message,
   theme
 } from "antd";
+import dayjs from 'dayjs';
 import "easymde/dist/easymde.min.css";
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import {
-  useDeleteAdditionalServiceMutation,
-  useGetAdditionalServiceByIdQuery,
-  useUpdateAdditionalServiceMutation,
-} from "../../../app/services/additionalServices.service";
+  useDeleteDirectorMutation,
+  useGetDirectorByIdQuery,
+  useUpdateDirectorMutation,
+} from "../../../app/services/directors.service";
 import {
   useDeleteImageMutation,
   useGetImagesQuery,
@@ -33,20 +34,21 @@ import {
 } from "../../../app/services/images.service";
 import AppBreadCrumb from "../../../components/layout/AppBreadCrumb";
 import { API_DOMAIN } from "../../../data/constants";
+import { formatDate } from "../../../utils/functionUtils";
 
-const AdditionalServiceDetail = () => {
+const DirectorDetail = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  const { additionalServiceId } = useParams();
+  const { directorId } = useParams();
   const imagesData = useSelector((state) => state.images);
-  const { data: additionalService, isLoading: isFetchingAdditionalService } =
-    useGetAdditionalServiceByIdQuery(additionalServiceId);
+  const { data: director, isLoading: isFetchingDirectors } =
+    useGetDirectorByIdQuery(directorId);
   const { isLoading: isFetchingImages } =
-    useGetImagesQuery(additionalServiceId);
+    useGetImagesQuery();
 
   const images =
     imagesData &&
@@ -56,10 +58,10 @@ const AdditionalServiceDetail = () => {
         url: `${API_DOMAIN}${image.url}`,
       };
     });
-  const [updateAdditionalService, { isLoading: isLoadingUpdateAdditionalService }] =
-    useUpdateAdditionalServiceMutation();
-  const [deleteAdditionalService, { isLoading: isLoadingDeleteAdditionalService }] =
-    useDeleteAdditionalServiceMutation();
+  const [updateDirector, { isLoading: isLoadingUpdateDirector }] =
+    useUpdateDirectorMutation();
+  const [deleteDirector, { isLoading: isLoadingDeleteDirector }] =
+    useDeleteDirectorMutation();
   const [uploadImage, { isLoading: isLoadingUploadImage }] =
     useUploadImageMutation();
   const [deleteImage, { isLoading: isLoadingDeleteImage }] =
@@ -67,7 +69,7 @@ const AdditionalServiceDetail = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageSelected, setImageSelected] = useState(null);
-  const [thumbnail, setThumbnail] = useState(null);
+  const [avatar, setAvatar] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12; // số lượng hình ảnh mỗi trang
@@ -77,17 +79,17 @@ const AdditionalServiceDetail = () => {
   const imagesRendered = images.slice(startIndex, endIndex);
 
   const breadcrumb = [
-    { label: "Danh sách combo-nước", href: "/admin/additional-services" },
-    { label: additionalService?.name, href: `/admin/additional-services/${additionalService?.id}/detail` },
+    { label: "Danh sách đạo diễn", href: "/admin/directors" },
+    { label: director?.name, href: `/admin/directors/${director?.id}/detail` },
   ];
 
   useEffect(() => {
-    if (additionalService && thumbnail === null) {
-      setThumbnail(additionalService?.thumbnail.startsWith("/api") ? `${API_DOMAIN}${additionalService?.thumbnail}` : additionalService?.thumbnail);
+    if (director && avatar === null) {
+      setAvatar(director?.avatar.startsWith("/api") ? `${API_DOMAIN}${director?.avatar}` : director?.avatar);
     }
-  }, [additionalService, thumbnail]);
+  }, [director, avatar]);
 
-  if (isFetchingAdditionalService || isFetchingImages) {
+  if (isFetchingDirectors || isFetchingImages) {
     return <Spin size="large" fullscreen />;
   }
 
@@ -98,10 +100,10 @@ const AdditionalServiceDetail = () => {
   const handleUpdate = () => {
     form.validateFields()
       .then((values) => {
-        return updateAdditionalService({ additionalServiceId, ...values }).unwrap();
+        return updateDirector({ directorId, ...values }).unwrap();
       })
       .then((data) => {
-        message.success("Cập nhật combo-nước thành công!");
+        message.success("Cập nhật đạo diễn thành công!");
       })
       .catch((error) => {
         console.log(error);
@@ -111,18 +113,18 @@ const AdditionalServiceDetail = () => {
 
   const handleDelete = () => {
     Modal.confirm({
-      title: "Bạn có chắc chắn muốn xóa combo-nước này?",
+      title: "Bạn có chắc chắn muốn xóa đạo diễn này?",
       content: "Hành động này không thể hoàn tác!",
       okText: "Xóa",
       okType: "danger",
       cancelText: "Hủy",
       onOk: () => {
-        deleteAdditionalService(additionalService.id)
+        deleteDirector(director.id)
           .unwrap()
           .then((data) => {
-            message.success("Xóa combo-nước thành công!");
+            message.success("Xóa đạo diễn thành công!");
             setTimeout(() => {
-              navigate("/admin/additional-services");
+              navigate("/admin/directors");
             }, 1500);
           })
           .catch((error) => {
@@ -177,7 +179,7 @@ const AdditionalServiceDetail = () => {
   return (
     <>
       <Helmet>
-        <title>{additionalService.name}</title>
+        <title>{director.name}</title>
       </Helmet>
       <AppBreadCrumb items={breadcrumb} />
       <div
@@ -190,7 +192,7 @@ const AdditionalServiceDetail = () => {
       >
         <Flex justify="space-between" align="center" style={{ marginBottom: "1rem" }}>
           <Space>
-            <RouterLink to="/admin/additional-services">
+            <RouterLink to="/admin/directors">
               <Button type="default" icon={<LeftOutlined />}>
                 Quay lại
               </Button>
@@ -200,7 +202,7 @@ const AdditionalServiceDetail = () => {
               type="primary"
               icon={<SaveOutlined />}
               onClick={handleUpdate}
-              loading={isLoadingUpdateAdditionalService}
+              loading={isLoadingUpdateDirector}
             >
               Cập nhật
             </Button>
@@ -210,9 +212,9 @@ const AdditionalServiceDetail = () => {
             danger
             icon={<DeleteOutlined />}
             onClick={handleDelete}
-            loading={isLoadingDeleteAdditionalService}
+            loading={isLoadingDeleteDirector}
           >
-            Xóa combo-nước
+            Xóa đạo diễn
           </Button>
         </Flex>
 
@@ -221,22 +223,36 @@ const AdditionalServiceDetail = () => {
           layout="vertical"
           autoComplete="off"
           initialValues={{
-            ...additionalService
+            ...director,
+            birthday: director.birthday ? dayjs(formatDate(director.birthday), 'DD/MM/YYYY') : null,
           }}
         >
-          <Row gutter={16}>
-            <Col span={16}>
+          <Row>
+            <Col span={12}>
               <Form.Item
-                label="Tên combo-nước"
+                label="Họ tên"
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Tên không được để trống!",
+                    message: "Họ tên không được để trống!",
                   },
                 ]}
               >
                 <Input placeholder="Enter name" />
+              </Form.Item>
+
+              <Form.Item
+                label="Ngày sinh"
+                name="birthday"
+                rules={[
+                  {
+                    required: true,
+                    message: "Ngày sinh không được để trống!",
+                  }
+                ]}
+              >
+                <DatePicker style={{ width: "100%" }} format={"DD/MM/YYYY"} />
               </Form.Item>
 
               <Form.Item
@@ -254,75 +270,18 @@ const AdditionalServiceDetail = () => {
                   placeholder="Enter description"
                 />
               </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                label="Giá tiền"
-                name="price"
-                rules={[
-                  {
-                    required: true,
-                    message: "Giá tiền không được để trống!",
-                  },
-                  {
-                    validator: (_, value) => {
-                      if (value <= 0) {
-                        return Promise.reject(
-                          "Giá tiền phải lớn hơn 0!"
-                        );
-                      }
-                      return Promise.resolve();
-                    }
-                  }
-                ]}
-              >
-                <InputNumber placeholder="Enter price" style={{ width: "100%" }} />
-              </Form.Item>
 
-              <Form.Item
-                label="Trạng thái"
-                name="status"
-                rules={[
-                  {
-                    required: true,
-                    message:
-                      "Trạng thái không được để trống!",
-                  },
-                ]}
-              >
-                <Select
-                  style={{ width: "100%" }}
-                  showSearch
-                  placeholder="Select a status"
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                  options={[
-                    { label: "Nháp", value: false },
-                    { label: "Công khai", value: true },
-                  ]}
-                />
-              </Form.Item>
-
-              <Form.Item name="thumbnail">
-                <Space
-                  direction="vertical"
-                  style={{ width: "100%" }}
-                >
-                  <img
-                    style={{
-                      width: "100%",
-                      height: 300,
-                      objectFit: "cover",
-                    }}
-                    src={thumbnail}
-                    alt="Thumbnail"
+              <Form.Item name="avatar">
+                <Space direction="vertical">
+                  <Avatar
+                    src={<img src={avatar} alt="avatar" />}
+                    size={180}
                   />
                   <Button
                     type="primary"
                     onClick={() => setIsModalOpen(true)}
                   >
-                    Thay đổi ảnh combo-nước
+                    Thay đổi ảnh đạo diễn
                   </Button>
                 </Space>
               </Form.Item>
@@ -363,10 +322,10 @@ const AdditionalServiceDetail = () => {
                 type="primary"
                 disabled={!imageSelected}
                 onClick={() => {
-                  setThumbnail(imageSelected);
+                  setAvatar(imageSelected);
                   setIsModalOpen(false);
                   form.setFieldsValue({
-                    thumbnail: imageSelected.slice(API_DOMAIN.length),
+                    avatar: imageSelected.slice(API_DOMAIN.length),
                   });
                 }}
               >
@@ -421,4 +380,4 @@ const AdditionalServiceDetail = () => {
   );
 };
 
-export default AdditionalServiceDetail;
+export default DirectorDetail;

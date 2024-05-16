@@ -21,6 +21,8 @@ function ModalChoseTicket({ schedule, showtimes, open, handleOpen }) {
     const { data: seats, isLoading, isFetching, isError, error } = useGetSeatsByAuditoriumQuery({
         auditoriumId: auditorium.id,
         showtimeId: showtimes.id
+    }, {
+        refetchOnMountOrArgChange: true
     })
     const [bookReservation, { isLoading: isLoadingBookReservation }] = useBookReservationMutation();
     const [cancelReservation, { isLoading: isLoadingCancelReservation }] = useCancelReservationMutation();

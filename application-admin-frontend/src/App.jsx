@@ -32,6 +32,12 @@ import OrderDetail from "./pages/order/order-detail/OrderDetail";
 import RevenueByMovie from "./pages/dashboard/revenue-movie/RevenueByMovie";
 import RevenueByCinema from "./pages/dashboard/revenue-cinema/RevenueByCinema";
 import Dashboard from "./pages/dashboard/dashboard/Dashboard";
+import ActorList from "./pages/actor/actor-list/ActorList";
+import ActorDetail from "./pages/actor/actor-detail/ActorDetail";
+import ActorCreate from "./pages/actor/actor-create/ActorCreate";
+import DirectorList from "./pages/director/director-list/DirectorList";
+import DirectorDetail from "./pages/director/director-detail/DirectorDetail";
+import DirectorCreate from "./pages/director/director-create/DirectorCreate";
 
 function App() {
     return (
@@ -63,6 +69,16 @@ function App() {
                             <Route index element={<AdditionalServiceList />} />
                             <Route path=":additionalServiceId/detail" element={<AdditionalServiceDetail />} />
                             <Route path="create" element={<AdditionalServiceCreate />} />
+                        </Route>
+                        <Route path="actors">
+                            <Route index element={<ActorList />} />
+                            <Route path=":actorId/detail" element={<ActorDetail />} />
+                            <Route path="create" element={<ActorCreate />} />
+                        </Route>
+                        <Route path="directors">
+                            <Route index element={<DirectorList />} />
+                            <Route path=":directorId/detail" element={<DirectorDetail />} />
+                            <Route path="create" element={<DirectorCreate />} />
                         </Route>
                         <Route path="cinemas">
                             <Route index element={<CinemaList />} />

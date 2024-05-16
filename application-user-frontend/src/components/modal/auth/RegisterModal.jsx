@@ -1,9 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { useRegisterAccountMutation } from '../../../app/services/auth.api';
+import { EyeIcon, EyeOffIcon } from '../../icon/Icon';
 import ModalBase from '../base/ModalBase';
 
 const schema = yup.object({
@@ -26,6 +27,14 @@ function RegistrationModal({ open, handleClose, handleLogin }) {
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
     });
+    const [showPassword, setShowPassword] = useState({
+        password: false,
+        confirmPassword: false
+    });
+
+    const togglePasswordVisibility = (field) => {
+        setShowPassword({ ...showPassword, [field]: !showPassword[field] });
+    };
 
     const onSubmit = data => {
         registerAccount(data)
@@ -50,29 +59,84 @@ function RegistrationModal({ open, handleClose, handleLogin }) {
                     <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit(onSubmit)}>
                         <div>
                             <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Họ tên</label>
-                            <input type="text" name="name" id="name" {...register('name')} className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5" />
+                            <input
+                                type="text"
+                                name="name"
+                                id="name"
+                                {...register('name')}
+                                placeholder="Enter name..."
+                                className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5"
+                            />
                             <p className="text-red-500 text-xs mt-1">{errors.name?.message}</p>
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                             <div>
                                 <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
-                                <input type="email" name="email" id="email" {...register('email')} className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5" />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    {...register('email')}
+                                    placeholder="Enter email..."
+                                    className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5"
+                                />
                                 <p className="text-red-500 text-xs mt-1">{errors.email?.message}</p>
                             </div>
                             <div>
                                 <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900">Số điện thoại</label>
-                                <input type="tel" name="phone" id="phone" {...register('phone')} className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5" />
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    id="phone"
+                                    {...register('phone')}
+                                    placeholder="Enter phone..."
+                                    className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5"
+                                />
                                 <p className="text-red-500 text-xs mt-1">{errors.phone?.message}</p>
                             </div>
                         </div>
                         <div>
                             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Mật khẩu</label>
-                            <input type="password" name="password" id="password" {...register('password')} className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5" />
+                            <div className="relative">
+                                <input
+                                    type={showPassword.password ? 'text' : 'password'}
+                                    name="password"
+                                    id="password"
+                                    {...register('password')}
+                                    placeholder="Enter password..."
+                                    className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5 pe-11"
+                                />
+                                <button
+                                    onClick={() => togglePasswordVisibility('password')}
+                                    type="button"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                                    title="Show password"
+                                >
+                                    {showPassword.password ? <EyeOffIcon /> : <EyeIcon />}
+                                </button>
+                            </div>
                             <p className="text-red-500 text-xs mt-1">{errors.password?.message}</p>
                         </div>
                         <div>
                             <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900">Xác nhận mật khẩu</label>
-                            <input type="password" name="confirmPassword" id="confirmPassword" {...register('confirmPassword')} className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5" />
+                            <div className="relative">
+                                <input
+                                    type={showPassword.confirmPassword ? 'text' : 'password'}
+                                    name="confirmPassword"
+                                    id="confirmPassword"
+                                    {...register('confirmPassword')}
+                                    placeholder="Enter confirm password..."
+                                    className="border border-gray-300 text-gray-800 sm:text-sm rounded-lg focus:border-pink-600 block w-full p-2.5 pe-11"
+                                />
+                                <button
+                                    onClick={() => togglePasswordVisibility('confirmPassword')}
+                                    type="button"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                                    title="Show password"
+                                >
+                                    {showPassword.confirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                                </button>
+                            </div>
                             <p className="text-red-500 text-xs mt-1">{errors.confirmPassword?.message}</p>
                         </div>
                         <button

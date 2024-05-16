@@ -8,9 +8,11 @@ import {
     ProjectOutlined,
     ReadOutlined,
     RobotOutlined,
+    RocketOutlined,
     TabletOutlined,
     TeamOutlined,
-    UserOutlined
+    UserOutlined,
+    TrophyOutlined
 } from "@ant-design/icons";
 
 const menu = [
@@ -220,6 +222,42 @@ const menu = [
                 id: 62,
                 label: "Tạo combo-nước",
                 url: "/admin/additional-services/create",
+            },
+        ],
+    },
+    {
+        id: 500,
+        label: "Quản lý đạo diễn",
+        icon: RocketOutlined,
+        url: "/admin/directors",
+        subs: [
+            {
+                id: 5001,
+                label: "Danh sách đạo diễn",
+                url: "/admin/directors",
+            },
+            {
+                id: 5002,
+                label: "Tạo đạo diễn",
+                url: "/admin/directors/create",
+            },
+        ],
+    },
+    {
+        id: 600,
+        label: "Quản lý diễn viên",
+        icon: TrophyOutlined,
+        url: "/admin/actors",
+        subs: [
+            {
+                id: 6001,
+                label: "Danh sách diễn viên",
+                url: "/admin/actors",
+            },
+            {
+                id: 6002,
+                label: "Tạo diễn viên",
+                url: "/admin/actors/create",
             },
         ],
     },

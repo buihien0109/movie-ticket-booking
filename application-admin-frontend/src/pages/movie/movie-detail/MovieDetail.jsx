@@ -191,7 +191,7 @@ const MovieDetail = () => {
   return (
     <>
       <Helmet>
-        <title>{movie.title}</title>
+        <title>{movie.name}</title>
       </Helmet>
       <AppBreadCrumb items={breadcrumb} />
       <div

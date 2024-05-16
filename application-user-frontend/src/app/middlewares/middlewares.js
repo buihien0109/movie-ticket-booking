@@ -4,7 +4,7 @@ import { logout } from "../slices/auth.slice";
 export const checkStatusMiddleware = ({ dispatch }) => (next) => (action) => {
     if (action.type.endsWith('rejected')) {
         const { payload, error } = action;
-        if (error && payload.status === 401) {
+        if (error && payload?.status === 401) {
             dispatch(logout());
         }
     }
