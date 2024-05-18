@@ -6,13 +6,14 @@
 2. [Demo](#demo)
 3. [Tính năng](#tính-năng)
 4. [Công nghệ sử dụng](#công-nghệ-sử-dụng)
-5. [Triển khai ứng dụng](#triển-khai-ứng-dụng)
+5. [Sơ đồ thiết kế cơ sở dữ liệu](#sơ-đồ-thiết-kế-cơ-sở-dữ-liệu)
+6. [Triển khai ứng dụng](#triển-khai-ứng-dụng)
     - [Yêu cầu](#yêu-cầu)
     - [Cài đặt](#cài-đặt)
     - [Chạy ứng dụng trên local](#chạy-ứng-dụng-trên-local)
     - [Triển khai với Docker](#triển-khai-với-docker)
-6. [Sử dụng](#sử-dụng)
-7. [Liên hệ](#liên-hệ)
+7. [Sử dụng](#sử-dụng)
+8. [Liên hệ](#liên-hệ)
 
 ## Giới thiệu
 
@@ -63,6 +64,10 @@ Xem demo trực tuyến:
 -   **Cơ sở dữ liệu:** MySQL
 -   **Công cụ xây dựng:** Maven
 -   **Khác:** RESTful API, JWT, Docker, Docker Compose
+
+## Sơ đồ thiết kế cơ sở dữ liệu
+
+- [Sơ đồ cơ sở dữ liệu](https://dbdiagram.io/d/Movie-ticket-booking-website-65a56245ac844320aef632ee)
 
 ## Triển khai ứng dụng
 
