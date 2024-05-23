@@ -19,7 +19,9 @@ function ReviewList({ movie }) {
     const [page, setPage] = useState(1);
     const [isShowLoadMore, setIsShowLoadMore] = useState(true);
 
-    const { data: pageData } = useGetAllReviewsByMovieIdQuery({ movieId, page });
+    const { data: pageData, refetch } = useGetAllReviewsByMovieIdQuery({ movieId, page }, {
+        refetchOnMountOrArgChange: true,
+    });
 
     useEffect(() => {
         if (pageData && pageData.content) {
@@ -43,8 +45,9 @@ function ReviewList({ movie }) {
         setPage(page + 1);
     };
 
-    const handeSetPage = (page) => {
+    const handleSetPage = (page) => {
         setPage(page);
+        refetch();
     }
 
     return (
@@ -79,7 +82,7 @@ function ReviewList({ movie }) {
                                 key={review.id}
                                 review={review}
                                 movieId={movieId}
-                                onSetPage={handeSetPage}
+                                onSetPage={handleSetPage}
                             />
                         ))}
                     </div>
@@ -117,7 +120,7 @@ function ReviewList({ movie }) {
                     open={open}
                     handleClose={handleOpen}
                     movieId={movieId}
-                    onSetPage={handeSetPage}
+                    onSetPage={handleSetPage}
                 />
             )}
         </>

@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -86,6 +87,7 @@ public class MailService {
     }
 
     // Send mail confirm order
+    @Transactional
     @Async
     public void sendMailConfirmOrder(Map<String, Object> data) {
         log.info("sendMailConfirmOrder");
@@ -95,12 +97,14 @@ public class MailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setTo((String) data.get("email"));
-            helper.setSubject("Xác nhận đặt hàng");
+            helper.setSubject("Xác nhận đặt vé xem phim");
 
             // Create the Thymeleaf context
             Context context = new Context();
-            context.setVariable("user", data.get("user"));
             context.setVariable("order", data.get("order"));
+            context.setVariable("user", data.get("user"));
+            context.setVariable("serviceItems", data.get("serviceItems"));
+            context.setVariable("ticketItems", data.get("ticketItems"));
 
             // Use the template engine to process the template
             String htmlContent = templateEngine.process("mail-template/confirmation-order", context);

@@ -9,7 +9,6 @@ import Error from '../../components/error/Error';
 import { EyeIcon, EyeOffIcon, IconFail, IconSuccess } from '../../components/icon/Icon';
 import Loading from '../../components/loading/Loading';
 
-// http://127.0.0.1:5174/dat-lai-mat-khau?token=6814410a-3f65-4dba-822b-15ca4d51c007
 const schema = yup.object({
     newPassword: yup.string()
         .required('Mật khẩu không được để trống'),

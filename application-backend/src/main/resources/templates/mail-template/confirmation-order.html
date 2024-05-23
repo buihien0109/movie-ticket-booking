@@ -91,65 +91,108 @@
         <h2><span>HCINEMA</span></h2>
     </div>
     <div class="content">
-        <h3>Xác nhận đơn hàng</h3>
+        <h3>Xác nhận thanh toán</h3>
         <p>Chào <b th:text="${user.name}">Bùi Hiên</b></p>
         <p>
-            Chúng tôi đã nhận được đơn hàng của bạn và rất vui mừng
-            thông báo rằng đơn hàng đã được ghi nhận thành công.
+            Chúng tôi đã nhận được thông tin đặt vé của bạn và rất vui mừng
+            thông báo rằng giao dịch đã được ghi nhận thành công.
         </p>
-        <p><b>Thông tin về Đơn hàng:</b></p>
+        <p><b>THÔNG TIN ĐẶT VÉ</b></p>
         <table class="order-info">
             <tbody>
             <tr>
-                <td class="label">Mã Đơn Hàng</td>
+                <td class="label">Mã giao dịch</td>
                 <td class="value" th:text="${order.id}">#7381992</td>
             </tr>
             <tr>
-                <td class="label">Họ Tên</td>
-                <td class="value" th:text="${user.name}">Bùi Hiên</td>
+                <td class="label">Phim</td>
+                <td class="value" th:text="${order.showtime.movie.name}">Furiosa: Câu Chuyện Từ Max Điên</td>
             </tr>
             <tr>
-                <td class="label">Email</td>
-                <td class="value" th:text="${user.email}">hien@gmail.com</td>
+                <td class="label">Giờ chiếu</td>
+                <td class="value">
+                    <th:block th:text="${order.showtime.startTime}"></th:block>
+                    -
+                    <th:block th:text="${order.showtime.endTime}"></th:block>
+                </td>
             </tr>
             <tr>
-                <td class="label">SĐT</td>
-                <td class="value" th:text="${user.phone}">0344005816</td>
+                <td class="label">Ngày chiếu</td>
+                <td class="value" th:text="${#temporals.format(order.showtime.date, 'dd/MM/yyyy')}">22-05-2024</td>
             </tr>
             <tr>
-                <td class="label">Ngày Mua</td>
-                <td class="value" th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy - HH:mm')}">08/10/2023</td>
+                <td class="label">Phòng chiếu</td>
+                <td class="value" th:text="${order.showtime.auditorium.name}">Cinema 1</td>
+            </tr>
+            <tr>
+                <td class="label">Rạp chiếu</td>
+                <td class="value" th:text="${order.showtime.auditorium.cinema.name}">HCinema Aeon Hà Đông</td>
+            </tr>
+            <tr>
+                <td class="label">Ngày đặt</td>
+                <td class="value" th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy - HH:mm')}">08/10/2023</td>
+            </tr>
+            <tr>
+                <td class="label">Thành Tiền</td>
+                <td class="value" th:text="|${#numbers.formatInteger(order.getTempPrice(),3,'COMMA')}đ|">460,000</td>
+            </tr>
+            <tr>
+                <td class="label">Giảm giá</td>
+                <td class="value" th:text="|${#numbers.formatInteger(order.getDiscountPrice(),3,'COMMA')}đ|">460,000
+                </td>
             </tr>
             <tr>
                 <td class="label">Tổng Tiền</td>
-                <td class="value" th:text="|${#numbers.formatInteger(order.amount,3,'COMMA')}đ|">460,000</td>
+                <td class="value" th:text="|${#numbers.formatInteger(order.getTotalPrice(),3,'COMMA')}đ|">460,000</td>
             </tr>
             </tbody>
         </table>
 
+        <p><b>THÔNG TIN GHẾ</b></p>
         <table>
             <thead>
             <tr>
-                <th>Tên phim</th>
-                <th>Đơn giá</th>
-                <th>Thành tiền</th>
+                <th>Thông tin ghế</th>
+                <th>Loại ghế</th>
+                <th>Giá tiền</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td th:text="${order.film.title}">Synergistic Wooden Bench 11</td>
-                <td th:text="|${#numbers.formatInteger(order.film.price,3,'COMMA')}đ|">20,000</td>
-                <td th:text="|${#numbers.formatInteger(order.amount,3,'COMMA')}đ|">60,000</td>
+            <tr th:each="ticket : ${ticketItems}">
+                <td th:text="${ticket.seat.code}">G15</td>
+                <td th:text="|Ghế ${ticket.seat.type}|">Ghế VIP</td>
+                <td th:text="|${#numbers.formatInteger(ticket.price,3,'COMMA')}đ|">60,000</td>
             </tr>
             </tbody>
         </table>
 
-        <p><b>Phương thức thanh toán:</b> <th:block th:text="${order.paymentMethod.value}"></th:block></p>
+        <th:block th:if="${!serviceItems.isEmpty()}">
+            <p><b>THÔNG TIN DỊCH VỤ</b></p>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Tên dịch vụ</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Tổng tiền</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="service : ${serviceItems}">
+                    <td th:text="${service.additionalService.name}">GHOSTBUSTERS COMBO</td>
+                    <td th:text="${service.quantity}">2</td>
+                    <td th:text="|${#numbers.formatInteger(service.price,3,'COMMA')}đ|">20,000</td>
+                    <td th:text="|${#numbers.formatInteger(service.quantity * service.price,3,'COMMA')}đ|">60,000</td>
+                </tr>
+                </tbody>
+            </table>
+        </th:block>
 
         <p>
             Nếu bạn có bất kỳ câu hỏi hoặc cần hỗ trợ, vui lòng liên hệ
-            với chúng tôi qua email <a href="mailto:admin@gmail.com">admin@gmail.com</a> hoặc số điện thoại <a
-                href="tel:0966222888">0966222888</a>.
+            với chúng tôi qua email <a href="mailto:hotro@hcinema.vn">hotro@hcinema.vn</a> hoặc Hotline <a
+                href="tel:1900141480">1900 1414 80</a>.
         </p>
     </div>
 </div>

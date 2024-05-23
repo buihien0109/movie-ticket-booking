@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useGetAllReviewsOfMoviesQuery } from '../../../app/services/reviewPublic.api';
 import Error from '../../../components/error/Error';
 import Loading from '../../../components/loading/Loading';
 import MovieReviewItem from './MovieReviewItem';
-import { useGetAllReviewsOfMoviesQuery } from '../../../app/services/reviewPublic.api';
 
 const useFetchMovieReviews = () => {
     const [page, setPage] = useState(1);

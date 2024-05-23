@@ -29,8 +29,8 @@ const parseOrderStatus = (status) => {
         case "PENDING":
             return <Tag color="default">Chờ xác nhận</Tag>;
         case "CONFIRMED":
-            return <Tag color="success">Đã xác nhận</Tag>;
-        case "CANCELED":
+            return <Tag color="success">Đã thanh toán</Tag>;
+        case "CANCELLED":
             return <Tag color="error">Đã hủy</Tag>;
         default:
             return <Tag color="default">Không xác định</Tag>;

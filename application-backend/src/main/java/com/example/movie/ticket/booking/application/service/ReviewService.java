@@ -152,7 +152,19 @@ public class ReviewService {
             throw new BadRequestException("Review không thuộc phim này");
         }
 
-        List<String> images = request.getImages();
+        List<String> oldImages = review.getImages() == null ? new ArrayList<>() : review.getImages();
+        List<String> images = request.getImages() == null ? new ArrayList<>() : request.getImages();
+
+        // delete image in oldImages but not in images
+        if (!oldImages.isEmpty()) {
+            for (String oldImage : oldImages) {
+                if (!images.contains(oldImage)) {
+                    log.info("Delete image: {}", oldImage);
+                    FileUtils.deleteFileByURL(oldImage);
+                }
+            }
+        }
+
         if (files != null && !files.isEmpty()) {
             for (MultipartFile file : files) {
                 ImageResponse imageResponse = imageService.uploadImage(file);
@@ -192,7 +204,7 @@ public class ReviewService {
         // delete images
         if(review.getImages() != null && !review.getImages().isEmpty()) {
             for (String image : review.getImages()) {
-                FileUtils.deleteFile(image);
+                FileUtils.deleteFileByURL(image);
             }
         }
     }

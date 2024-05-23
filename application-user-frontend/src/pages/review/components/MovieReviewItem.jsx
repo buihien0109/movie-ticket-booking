@@ -1,6 +1,6 @@
 import React from 'react'
-import { formatDate } from '../../../utils/functionUtils'
 import { Link } from 'react-router-dom'
+import { formatDate } from '../../../utils/functionUtils'
 
 function MovieReviewItem({ movie }) {
     return (

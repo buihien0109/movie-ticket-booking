@@ -1,8 +1,10 @@
 package com.example.movie.ticket.booking.application.controller;
 
+import com.example.movie.ticket.booking.application.entity.Order;
 import com.example.movie.ticket.booking.application.model.enums.OrderStatus;
 import com.example.movie.ticket.booking.application.model.request.CreateOrderRequest;
 import com.example.movie.ticket.booking.application.model.response.PaymentResponse;
+import com.example.movie.ticket.booking.application.service.MailService;
 import com.example.movie.ticket.booking.application.service.OrderService;
 import com.example.movie.ticket.booking.application.service.VNPayService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,7 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -20,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
     private final VNPayService vnPayService;
+    private final MailService mailService;
 
     @Value("${app.frontend.host}")
     private String frontendHost;
@@ -54,6 +61,16 @@ public class OrderController {
 
         if (paymentStatus == 1) {
             orderService.updateOrderStatus(Integer.valueOf(orderInfo), OrderStatus.CONFIRMED);
+
+            // TODO: Send mail confirm order
+//            Order order = orderService.getOrderById(Integer.valueOf(orderInfo));
+//            Map<String, Object> data = new HashMap<>();
+//            data.put("order", order);
+//            data.put("email", order.getUser().getEmail());
+//            data.put("user", order.getUser());
+//            data.put("serviceItems", order.getServiceItems());
+//            data.put("ticketItems", order.getTicketItems());
+//            mailService.sendMailConfirmOrder(data);
         } else {
             orderService.updateOrderStatus(Integer.valueOf(orderInfo), OrderStatus.CANCELLED);
         }

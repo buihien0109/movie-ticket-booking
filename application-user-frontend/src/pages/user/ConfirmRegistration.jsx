@@ -5,7 +5,6 @@ import Error from '../../components/error/Error';
 import { EyeIcon, EyeOffIcon, IconFail, IconSuccess } from '../../components/icon/Icon';
 import Loading from '../../components/loading/Loading';
 
-// http://127.0.0.1:5174/xac-thuc-tai-khoan?token=6814410a-3f65-4dba-822b-15ca4d51c007
 function ConfirmRegistration() {
     const [searchParams, setSearchParams] = useSearchParams();
     const token = searchParams.get('token');

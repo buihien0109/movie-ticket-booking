@@ -6,6 +6,7 @@ import com.example.movie.ticket.booking.application.exception.ResourceNotFoundEx
 import com.example.movie.ticket.booking.application.model.request.UpsertScheduleRequest;
 import com.example.movie.ticket.booking.application.repository.MovieRepository;
 import com.example.movie.ticket.booking.application.repository.ScheduleRepository;
+import com.example.movie.ticket.booking.application.repository.ShowtimeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -19,6 +20,7 @@ import java.util.List;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final MovieRepository movieRepository;
+    private final ShowtimeRepository showtimeRepository;
 
     public List<Schedule> getAllSchedules() {
         return scheduleRepository.findAll(Sort.by("startDate").descending());
@@ -63,8 +65,17 @@ public class ScheduleService {
     }
 
     public void deleteSchedule(Integer id) {
+        // Kiểm tra xem lịch chiếu có tồn tại không
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy lịch chiếu với id: " + id));
+
+        // Kiểm tra xem lịch chiếu đang có suất chiếu nào không
+        Movie movie = schedule.getMovie();
+        if (showtimeRepository.existsByMovie_Id(movie.getId())) {
+            throw new ResourceNotFoundException("Không thể xóa lịch chiếu đang có suất chiếu");
+        }
+
+        // Xóa lịch chiếu
         scheduleRepository.delete(schedule);
     }
 }
