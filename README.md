@@ -1,5 +1,9 @@
 # Ứng dụng Đặt Vé Xem Phim Trực Tuyến
 
+Trang web demo, mang tính chất học tập, không dành cho mục đích thương mại.
+
+Giao diện người dùng tham khảo từ [MoMo Cinema](https://momo.vn/cinema).
+
 ## Mục lục
 
 1. [Giới thiệu](#giới-thiệu)
