@@ -62,7 +62,7 @@ const ActorCreate = () => {
                         onClick={handleCreate}
                         loading={isLoading}
                     >
-                        Tạo Actor
+                        Tạo diễn viên
                     </Button>
                 </Space>
 

@@ -25,4 +25,6 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Integer> {
     List<Showtime> findByMovie_IdAndDate(Integer id, LocalDate date);
 
     boolean existsByMovie_Id(Integer id);
+
+    boolean existsByMovie_IdAndDateBetween(Integer id, LocalDate currentDate, LocalDate endDate);
 }

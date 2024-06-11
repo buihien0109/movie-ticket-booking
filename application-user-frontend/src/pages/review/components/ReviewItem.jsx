@@ -58,11 +58,11 @@ function ReviewItem({ review, movieId, onSetPage }) {
                         <div className="relative mt-4 w-full">
                             <div className="gap-0.5 rounded-xl md:grid-cols-4 md:gap-2 md:rounded-none grid grid-cols-1 grid-rows-1 overflow-hidden">
                                 {review.images.map((image, index) => (
-                                    <div key={index} className="aspect-w-4 relative cursor-pointer overflow-hidden md:aspect-w-4 md:aspect-h-3 md:rounded aspect-h-3">
+                                    <div key={index} className="relative cursor-pointer overflow-hidden rounded">
                                         <img
                                             alt="Ảnh review"
                                             src={image}
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-cover aspect-[4/3]"
                                             loading="lazy"
                                         />
                                     </div>

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { API_DOMAIN, API_DOMAIN_PUBLIC, DOMAIN } from "../../data/constants";
+import { API_DOMAIN_PUBLIC, DOMAIN } from "../../data/constants";
 
 export const movieApi = createApi({
     reducerPath: "movieApi",
@@ -23,10 +23,11 @@ export const movieApi = createApi({
             },
             transformResponse: (response, meta, arg) => {
                 return {
-                    ...response, content: response.content.map((item) => {
+                    ...response,
+                    content: response.content.map((item) => {
                         return {
                             ...item,
-                            poster: item.poster.startsWith("/api") ? `${API_DOMAIN}${item.poster}` : item.poster
+                            poster: item.poster.startsWith("/api") ? `${DOMAIN}${item.poster}` : item.poster
                         };
                     })
                 }
@@ -37,13 +38,25 @@ export const movieApi = createApi({
             transformResponse: (response, meta, arg) => {
                 return {
                     ...response,
-                    poster: response.poster.startsWith("/api") ? `${API_DOMAIN}${response.poster}` : response.poster,
+                    poster: response.poster.startsWith("/api") ? `${DOMAIN}${response.poster}` : response.poster,
+                    actors: response.actors.map((actor) => {
+                        return {
+                            ...actor,
+                            avatar: actor.avatar.startsWith("/api") ? `${DOMAIN}${actor.avatar}` : actor.avatar
+                        }
+                    }),
+                    directors: response.directors.map((director) => {
+                        return {
+                            ...director,
+                            avatar: director.avatar.startsWith("/api") ? `${DOMAIN}${director.avatar}` : director.avatar
+                        }
+                    }),
                     reviews: response.reviews.map((review) => {
                         return {
                             ...review,
                             user: {
                                 ...review.user,
-                                avatar: review.user.avatar.startsWith("/api") ? `${DOMAIN}${review.user.avatar}` : review.user.avatar
+                                avatar: review.user.avatar.startsWith("/api") ? `${DOMAIN}${review.user.avatar}` : review.user.avatar,
                             }
                         }
                     })
@@ -56,7 +69,7 @@ export const movieApi = createApi({
                 return response.map((movie) => {
                     return {
                         ...movie,
-                        poster: movie.poster.startsWith("/api") ? `${API_DOMAIN}${movie.poster}` : movie.poster,
+                        poster: movie.poster.startsWith("/api") ? `${DOMAIN}${movie.poster}` : movie.poster,
                         reviews: movie.reviews.map((review) => {
                             return {
                                 ...review,
@@ -76,7 +89,7 @@ export const movieApi = createApi({
                 return response.map((item) => {
                     return {
                         ...item,
-                        poster: item.poster.startsWith("/api") ? `${API_DOMAIN}${item.poster}` : item.poster
+                        poster: item.poster.startsWith("/api") ? `${DOMAIN}${item.poster}` : item.poster
                     };
                 });
             },
@@ -117,6 +130,14 @@ export const movieApi = createApi({
                     }
                 }
             }
+        }),
+        checkMovieHasShowtimes: builder.query({
+            query: ({ movieId }) => {
+                return {
+                    url: `movies/${movieId}/has-showtimes`,
+                    method: "GET"
+                }
+            }
         })
     }),
 });
@@ -129,5 +150,6 @@ export const {
     useGetComingSoonMoviesQuery,
     useSearchMoviesQuery,
     useLazySearchMoviesQuery,
-    useGetShowtimesByMovieQuery
+    useGetShowtimesByMovieQuery,
+    useCheckMovieHasShowtimesQuery
 } = movieApi;

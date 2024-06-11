@@ -49,7 +49,9 @@ function MovieReviewItem({ movie }) {
                     <Link className="flex cursor-pointer items-center space-x-1 pl-10 text-xs font-bold underline hover:text-pink-500"
                         to={`/review-phim/${movie.id}/${movie.slug}`}>
                         <span>Xem thêm</span>
-                        <span><i className="fa-solid fa-arrow-right-long"></i></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="h-4 w-4 opacity-60">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
                     </Link>
                 </div>
             </div>

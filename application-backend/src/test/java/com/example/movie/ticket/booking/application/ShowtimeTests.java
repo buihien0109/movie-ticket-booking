@@ -81,8 +81,8 @@ public class ShowtimeTests {
 
     @Test
     void save_showtimes_in_range_day() {
-        LocalDate startDate = LocalDate.now().plusDays(1);
-        LocalDate endDate = startDate.plusDays(60);
+        LocalDate startDate = LocalDate.now().plusDays(3);
+        LocalDate endDate = startDate.plusDays(90);
 
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
             save_showtimes_one_day(date);

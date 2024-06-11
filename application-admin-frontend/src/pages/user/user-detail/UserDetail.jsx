@@ -115,7 +115,7 @@ const UserDetail = () => {
             .unwrap()
             .then((data) => {
                 message.success(
-                    "Reset mật khẩu thành công. Mật khẩu mới là: 123456",
+                    "Reset mật khẩu thành công. Mật khẩu mới là: 123",
                     2
                 );
             })

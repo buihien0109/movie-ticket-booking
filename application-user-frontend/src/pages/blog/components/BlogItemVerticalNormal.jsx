@@ -10,7 +10,7 @@ function BlogItemVerticalNormal({ blog }) {
                         <div className="relative flex overflow-hidden rounded bg-gray-100 ">
                             <img alt={blog.title}
                                 src={blog.thumbnail}
-                                className="w-full h-full object-cover" />
+                                className="w-full h-full object-cover aspect-[16/9]" />
                         </div>
                     </div>
                     <div className="order-1 flex-1 pr-6 sm:order-2 sm:w-full sm:flex-auto sm:pr-0">

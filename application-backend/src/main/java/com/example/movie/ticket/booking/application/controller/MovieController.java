@@ -57,6 +57,11 @@ public class MovieController {
         return ResponseEntity.ok(showtimeService.getShowtimesByMovie(id, showDate));
     }
 
+    @GetMapping("/public/movies/{id}/has-showtimes")
+    public ResponseEntity<?> checkMovieHasShowtimes(@PathVariable Integer id) {
+        return ResponseEntity.ok(showtimeService.checkMovieHasShowtimes(id));
+    }
+
     @GetMapping("/admin/movies")
     public ResponseEntity<?> getAllMovies(@RequestParam(required = false) Boolean status) {
         return ResponseEntity.ok(movieService.getAllMovies(status));

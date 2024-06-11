@@ -11,7 +11,9 @@ function Seat({ seat, onChooseSeat, isSelected }) {
         if (!auth.isAuthenticated) {
             toast.warning('Vui lòng đăng nhập để chọn ghế');
             dispatch(setActiveModal('LOGIN'));
-        } else if (!seat.reservationStatus || isSelected) {
+            return;
+        }
+        if (!seat.reservationStatus || isSelected) {
             // Chỉ cho phép chọn nếu ghế không có trạng thái đặt chỗ hoặc đã được chọn
             onChooseSeat(seat);
         }

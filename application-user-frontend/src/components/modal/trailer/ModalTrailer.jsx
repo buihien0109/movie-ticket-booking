@@ -9,7 +9,7 @@ function ModalTrailer({ movie, open, handleOpen }) {
                 <div className="modal-body h-full overflow-auto rounded-md bg-black/85 p-0">
                     <div className="relative aspect-[16/9] w-full bg-black">
                         <div className="">
-                            <iframe className="absolute inset-0 h-full w-full" frameborder="0" allowfullscreen=""
+                            <iframe className="absolute inset-0 h-full w-full" frameBorder="0" allowFullScreen=""
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 title={movie?.name}
                                 width="560" height="315"

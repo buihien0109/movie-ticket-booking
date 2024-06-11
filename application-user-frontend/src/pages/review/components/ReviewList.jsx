@@ -24,6 +24,12 @@ function ReviewList({ movie }) {
     });
 
     useEffect(() => {
+        setReviews([]);
+        setPage(1);
+    }, []);
+
+
+    useEffect(() => {
         if (pageData && pageData.content) {
             if (page === 1) {
                 setReviews(pageData.content);

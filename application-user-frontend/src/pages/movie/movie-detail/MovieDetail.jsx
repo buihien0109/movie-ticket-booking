@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import { useGetMovieDetailQuery, useGetShowtimesByMovieQuery } from '../../../app/services/movie.api';
+import { useCheckMovieHasShowtimesQuery, useGetMovieDetailQuery, useGetShowtimesByMovieQuery } from '../../../app/services/movie.api';
 import Error from '../../../components/error/Error';
 import Loading from '../../../components/loading/Loading';
 import ModalAddress from '../../../components/modal/address/ModalAddress';
@@ -89,19 +89,27 @@ function Showtimes({ index, schedule, cinemaActive, onChoseCinema, handleOpenMod
 function MovieDetail() {
     const { showtimes } = useSelector(state => state)
     const { movieId, movieSlug } = useParams();
+    const { open, handleOpen } = useModal();
+    const { open: openModalAddress, handleOpen: handleOpenModalAddress } = useModal();
+    const [cinemaActive, setCinemaActive] = useState(null);
+
     const {
         data: movie,
         isLoading: isLoadingMovie,
         isError: isErrorMovie
     } = useGetMovieDetailQuery({ id: movieId, slug: movieSlug })
+
     const {
         data,
         isLoading: isLoadingShowtimes,
         isError: isErrorShowtimes
     } = useGetShowtimesByMovieQuery({ movieId: movieId, showDate: showtimes.showdate })
-    const { open, handleOpen } = useModal();
-    const { open: openModalAddress, handleOpen: handleOpenModalAddress } = useModal();
-    const [cinemaActive, setCinemaActive] = useState(null);
+
+    const {
+        data: movieHasShowtimes,
+        isLoading: isLoadingCheckMovieHasShowtimes,
+        isError: isErrorCheckMovieHasShowtimes
+    } = useCheckMovieHasShowtimesQuery({ movieId: movieId })
 
     useEffect(() => {
         if (data && data.length > 0) {
@@ -109,8 +117,8 @@ function MovieDetail() {
         }
     }, [data])
 
-    if (isLoadingMovie || isLoadingShowtimes) return <Loading />
-    if (isErrorMovie || isErrorShowtimes) return <Error />
+    if (isLoadingMovie || isLoadingShowtimes || isLoadingCheckMovieHasShowtimes) return <Loading />
+    if (isErrorMovie || isErrorShowtimes || isErrorCheckMovieHasShowtimes) return <Error />
 
     const handleChoseCinema = index => {
         if (index === cinemaActive) return;
@@ -153,18 +161,12 @@ function MovieDetail() {
                     <div className="flex flex-wrap items-center md:flex-nowrap md:space-x-10 lg:items-start">
                         <div className="relative mb-4 w-full md:mb-0 md:w-auto">
                             <div className="w-28 md:mx-auto md:w-64">
-                                <div className="after:z-1 flex overflow-hidden border border-white/20 md:relative ">
-                                    <span style={{ boxSizing: "border-box", display: "inline-block", overflow: "hidden", width: "initial", height: "initial", background: "none", opacity: 1, border: 0, margin: 0, padding: 0, position: "relative", maxWidth: "100%" }}>
-                                        <span style={{ boxSizing: "border-box", display: "block", width: "initial", height: "initial", background: "none", opacity: 1, border: 0, margin: 0, padding: 0, maxWidth: "100%" }}>
-                                            <img alt="" aria-hidden="true"
-                                                src="data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27300%27%20height=%27450%27/%3e"
-                                                style={{ display: "block", maxWidth: "100%", width: "initial", height: "initial", background: "none", opacity: 1, border: 0, margin: 0, padding: 0 }} />
-                                        </span>
-                                        <img alt={movie.name}
-                                            src={movie.poster}
-                                            decoding="async" data-nimg="intrinsic" className=""
-                                            style={{ position: "absolute", inset: 0, boxSizing: "border-box", padding: 0, border: "none", margin: "auto", display: "block", width: 0, height: 0, minWidth: "100%", maxWidth: "100%", minHeight: "100%", maxHeight: "100%" }} />
-                                    </span>
+                                <div className="flex overflow-hidden border border-white/20 md:relative ">
+                                    <img
+                                        alt={movie.name}
+                                        src={movie.poster}
+                                        className="object-cover w-full aspect-[2/3]"
+                                    />
                                     <div onClick={handleOpen}
                                         className="z-12 absolute top-1/2 left-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-110 md:h-16 md:w-16">
                                         <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -245,7 +247,7 @@ function MovieDetail() {
                                     </div>
                                     <span>Xem trailer</span>
                                 </div>
-                                <Link target="_blank"
+                                <Link
                                     className="tracking-click-view-review tracking-focus flex items-center space-x-1.5 py-2 text-sm hover:underline"
                                     to={`/review-phim/${movie.id}/${movie.slug}`}>
                                     <div
@@ -268,46 +270,48 @@ function MovieDetail() {
             <div className="mx-auto w-full max-w-6xl px-5 md:px-8 lg:px-8">
                 <div id="phimLichChieu" className="-mt-16 grid grid-cols-1 pt-16 lg:grid-cols-3 lg:gap-12">
                     <div className="lg:col-span-2 lg:col-start-1">
-                        <section className="py-8">
-                            <div className="mb-2 sm:mb-0">
-                                <h2 className="text-xl font-bold">Lịch chiếu {movie.name}</h2>
+                        {movieHasShowtimes.hasShowtimes && (
+                            <section className="py-8">
+                                <div className="mb-2 sm:mb-0">
+                                    <h2 className="text-xl font-bold">Lịch chiếu {movie.name}</h2>
 
-                                <div className="relative mt-4">
-                                    <div className="rounded md:border md:border-gray-200">
-                                        <div className="box-nav z-20 border-b border-gray-200 bg-white py-2 top-[62px] sticky">
-                                            <ShowDate />
-                                        </div>
-                                        <div className="booking-list-height relative">
-                                            <div>
-                                                <div className="normal-accordion divide-y divide-gray-200" data-reach-accordion="">
-                                                    {movieSchedule.length > 0 && movieSchedule?.map((schedule, index) => (
-                                                        <Showtimes
-                                                            key={index}
-                                                            index={index}
-                                                            schedule={schedule}
-                                                            cinemaActive={cinemaActive}
-                                                            onChoseCinema={handleChoseCinema}
-                                                            handleOpenModalAddress={handleOpenModalAddress}
-                                                        />
-                                                    ))}
-                                                    {movieSchedule.length === 0 && (
-                                                        <div className="cinema-warning-notfound py-5 text-center">
-                                                            <div>
-                                                                <img src="https://homepage.momocdn.net/next-js/_next/static/public/cinema/not-found.svg" alt="Not found" className="mx-auto block" loading="lazy" width="120" height="120" />
+                                    <div className="relative mt-4">
+                                        <div className="rounded md:border md:border-gray-200">
+                                            <div className="box-nav z-20 border-b border-gray-200 bg-white py-2 top-[62px] sticky">
+                                                <ShowDate />
+                                            </div>
+                                            <div className="booking-list-height relative">
+                                                <div>
+                                                    <div className="normal-accordion divide-y divide-gray-200" data-reach-accordion="">
+                                                        {movieSchedule.length > 0 && movieSchedule?.map((schedule, index) => (
+                                                            <Showtimes
+                                                                key={index}
+                                                                index={index}
+                                                                schedule={schedule}
+                                                                cinemaActive={cinemaActive}
+                                                                onChoseCinema={handleChoseCinema}
+                                                                handleOpenModalAddress={handleOpenModalAddress}
+                                                            />
+                                                        ))}
+                                                        {movieSchedule.length === 0 && (
+                                                            <div className="cinema-warning-notfound py-5 text-center">
+                                                                <div>
+                                                                    <img src="https://homepage.momocdn.net/next-js/_next/static/public/cinema/not-found.svg" alt="Not found" className="mx-auto block" loading="lazy" width="120" height="120" />
+                                                                </div>
+                                                                <div className="mt-3 mb-0 text-lg font-semibold">
+                                                                    Úi, Suất chiếu không tìm thấy.
+                                                                </div>
+                                                                <div className="text-sm text-gray-500">Bạn hãy thử tìm ngày khác nhé</div>
                                                             </div>
-                                                            <div className="mt-3 mb-0 text-lg font-semibold">
-                                                                Úi, Suất chiếu không tìm thấy.
-                                                            </div>
-                                                            <div className="text-sm text-gray-500">Bạn hãy thử tìm ngày khác nhé</div>
-                                                        </div>
-                                                    )}
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </section>
+                            </section>
+                        )}
 
                         <section className="border-t border-gray-200 pb-8 pt-4 md:py-8">
                             <ReviewList movie={movie} />

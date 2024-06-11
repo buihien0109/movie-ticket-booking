@@ -18,7 +18,7 @@ export const reviewPublicApi = createApi({
                     ...response,
                     content: response.content.map(movie => ({
                         ...movie,
-                        poster: movie.poster.startsWith("/api") ? `${API_DOMAIN_PUBLIC}${movie.poster}` : movie.poster,
+                        poster: movie.poster.startsWith("/api") ? `${DOMAIN}${movie.poster}` : movie.poster,
                         reviews: movie.reviews.map(review => ({
                             ...review,
                             user: {

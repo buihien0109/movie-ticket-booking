@@ -22,6 +22,7 @@ import { showtimesApi } from "./services/showtimes.service";
 import { userApi } from "./services/users.service";
 import authReducer from "./slices/auth.slice";
 import imageReducer from "./slices/image.slice";
+import { tokenMiddleware } from "./middlewares/tokenMiddleware";
 
 const store = configureStore({
     reducer: {
@@ -70,7 +71,8 @@ const store = configureStore({
             seatApi.middleware,
             showtimesApi.middleware,
             orderApi.middleware,
-            checkStatusMiddleware
+            checkStatusMiddleware,
+            tokenMiddleware
         ),
 });
 

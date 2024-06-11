@@ -20,6 +20,7 @@ import { orderApi } from "./services/order.api";
 import { couponApi } from "./services/coupon.api";
 import { checkStatusMiddleware } from "./middlewares/middlewares";
 import { reviewPublicApi } from "./services/reviewPublic.api";
+import { tokenMiddleware } from "./middlewares/tokenMiddleware";
 
 const store = configureStore({
     reducer: {
@@ -61,7 +62,8 @@ const store = configureStore({
             orderApi.middleware,
             couponApi.middleware,
             reviewPublicApi.middleware,
-            checkStatusMiddleware
+            checkStatusMiddleware,
+            tokenMiddleware
         ),
 });
 

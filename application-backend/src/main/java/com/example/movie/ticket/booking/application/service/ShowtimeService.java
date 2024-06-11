@@ -7,7 +7,6 @@ import com.example.movie.ticket.booking.application.model.request.UpsertShowtime
 import com.example.movie.ticket.booking.application.model.response.ShowtimeResponse;
 import com.example.movie.ticket.booking.application.repository.*;
 import com.example.movie.ticket.booking.application.specification.ShowtimeSpecification;
-import com.example.movie.ticket.booking.application.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -21,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -164,5 +164,18 @@ public class ShowtimeService {
             // Nếu showDate là ngày trong quá khứ hoặc tương lai, trả về tất cả showtime
             return showtimes;
         }
+    }
+
+    public Map<String, Boolean> checkMovieHasShowtimes(Integer id) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phim có id = " + id));
+
+        // Kiểm tra xem phim có lịch chiếu nào không trong 20 ngày. Tính từ ngày hiện tại trở về sau
+        LocalDate currentDate = LocalDate.now(ZoneId.systemDefault());
+        LocalDate endDate = currentDate.plusDays(20);
+
+        boolean hasShowtimes = showtimeRepository.existsByMovie_IdAndDateBetween(id, currentDate, endDate);
+
+        return Map.of("hasShowtimes", hasShowtimes);
     }
 }

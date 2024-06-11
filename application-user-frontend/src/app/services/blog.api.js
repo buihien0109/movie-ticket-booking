@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { API_DOMAIN, API_DOMAIN_PUBLIC } from "../../data/constants";
+import { API_DOMAIN, API_DOMAIN_PUBLIC, DOMAIN } from "../../data/constants";
 
 export const blogApi = createApi({
     reducerPath: "blogApi",
@@ -22,7 +22,7 @@ export const blogApi = createApi({
                     ...response, content: response.content.map((item) => {
                         return {
                             ...item,
-                            thumbnail: item.thumbnail.startsWith("/api") ? `${API_DOMAIN}${item.thumbnail}` : item.thumbnail
+                            thumbnail: item.thumbnail.startsWith("/api") ? `${DOMAIN}${item.thumbnail}` : item.thumbnail
                         };
                     })
                 }
@@ -45,7 +45,7 @@ export const blogApi = createApi({
                     ...response, content: response.content.map((item) => {
                         return {
                             ...item,
-                            thumbnail: item.thumbnail.startsWith("/api") ? `${API_DOMAIN}${item.thumbnail}` : item.thumbnail
+                            thumbnail: item.thumbnail.startsWith("/api") ? `${DOMAIN}${item.thumbnail}` : item.thumbnail
                         };
                     })
                 }
@@ -68,7 +68,7 @@ export const blogApi = createApi({
                     ...response, content: response.content.map((item) => {
                         return {
                             ...item,
-                            thumbnail: item.thumbnail.startsWith("/api") ? `${API_DOMAIN}${item.thumbnail}` : item.thumbnail
+                            thumbnail: item.thumbnail.startsWith("/api") ? `${DOMAIN}${item.thumbnail}` : item.thumbnail
                         };
                     })
                 }
@@ -79,7 +79,7 @@ export const blogApi = createApi({
             transformResponse: (response, meta, arg) => {
                 return {
                     ...response,
-                    thumbnail: response.thumbnail.startsWith("/api") ? `${API_DOMAIN}${response.thumbnail}` : response.thumbnail
+                    thumbnail: response.thumbnail.startsWith("/api") ? `${DOMAIN}${response.thumbnail}` : response.thumbnail
                 };
             },
         }),
@@ -98,7 +98,7 @@ export const blogApi = createApi({
                 return response.map((item) => {
                     return {
                         ...item,
-                        thumbnail: item.thumbnail.startsWith("/api") ? `${API_DOMAIN}${item.thumbnail}` : item.thumbnail
+                        thumbnail: item.thumbnail.startsWith("/api") ? `${DOMAIN}${item.thumbnail}` : item.thumbnail
                     };
                 });
             },
@@ -109,7 +109,7 @@ export const blogApi = createApi({
                 return response.map((item) => {
                     return {
                         ...item,
-                        thumbnail: item.thumbnail.startsWith("/api") ? `${API_DOMAIN}${item.thumbnail}` : item.thumbnail
+                        thumbnail: item.thumbnail.startsWith("/api") ? `${DOMAIN}${item.thumbnail}` : item.thumbnail
                     };
                 });
             },
