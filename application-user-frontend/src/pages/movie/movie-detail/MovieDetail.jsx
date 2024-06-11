@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useCheckMovieHasShowtimesQuery, useGetMovieDetailQuery, useGetShowtimesByMovieQuery } from '../../../app/services/movie.api';
 import Error from '../../../components/error/Error';
 import Loading from '../../../components/loading/Loading';
@@ -87,6 +87,8 @@ function Showtimes({ index, schedule, cinemaActive, onChoseCinema, handleOpenMod
 }
 
 function MovieDetail() {
+    const location = useLocation();
+    const showtimesRef = useRef(null);
     const { showtimes } = useSelector(state => state)
     const { movieId, movieSlug } = useParams();
     const { open, handleOpen } = useModal();
@@ -116,6 +118,13 @@ function MovieDetail() {
             setCinemaActive(0);
         }
     }, [data])
+
+    useEffect(() => {
+        const hash = location.hash;
+        if (hash === '#phimLichChieu' && showtimesRef.current) {
+            showtimesRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [location]);
 
     if (isLoadingMovie || isLoadingShowtimes || isLoadingCheckMovieHasShowtimes) return <Loading />
     if (isErrorMovie || isErrorShowtimes || isErrorCheckMovieHasShowtimes) return <Error />
@@ -268,7 +277,7 @@ function MovieDetail() {
             </div>
 
             <div className="mx-auto w-full max-w-6xl px-5 md:px-8 lg:px-8">
-                <div id="phimLichChieu" className="-mt-16 grid grid-cols-1 pt-16 lg:grid-cols-3 lg:gap-12">
+                <div ref={showtimesRef} id="phimLichChieu" className="-mt-16 grid grid-cols-1 pt-16 lg:grid-cols-3 lg:gap-12">
                     <div className="lg:col-span-2 lg:col-start-1">
                         {movieHasShowtimes.hasShowtimes && (
                             <section className="py-8">
@@ -378,6 +387,7 @@ function MovieDetail() {
                     movie={movie}
                     open={open}
                     handleOpen={handleOpen}
+                    hasShowtimes={movieHasShowtimes.hasShowtimes}
                 />
             )}
 

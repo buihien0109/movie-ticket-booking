@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ModalBase from '../base/ModalBase';
 
-function ModalTrailer({ movie, open, handleOpen }) {
+function ModalTrailer({ movie, open, handleOpen, hasShowtimes }) {
     return (
         <>
             <ModalBase isOpen={open} onClose={handleOpen} size="md" style={{ width: "1000px" }}>
@@ -40,11 +40,13 @@ function ModalTrailer({ movie, open, handleOpen }) {
                                 {movie?.description}
                             </p>
                             <div className="mt-3 flex space-x-3">
-                                <Link
-                                    className="btn tracking-engage-btn-popup inline-block cursor-pointer rounded-md bg-pink-700 px-5 py-1.5 text-center text-sm  font-bold text-white text-opacity-90 transition-all hover:bg-pink-800"
-                                    to={`/phim/${movie?.id}/${movie?.slug}#phimLichChieu`}
-                                    onClick={handleOpen}
-                                >Đặt vé</Link>
+                                {hasShowtimes && (
+                                    <Link
+                                        className="btn tracking-engage-btn-popup inline-block cursor-pointer rounded-md bg-pink-700 px-5 py-1.5 text-center text-sm  font-bold text-white text-opacity-90 transition-all hover:bg-pink-800"
+                                        to={`#phimLichChieu`}
+                                        onClick={handleOpen}
+                                    >Đặt vé</Link>
+                                )}
                                 <button onClick={handleOpen} className="btn inline-block cursor-pointer rounded-md bg-gray-500 px-5 py-1.5 text-center text-sm font-bold  text-gray-100 text-opacity-90 transition-all hover:bg-gray-600">Đóng</button>
                             </div>
                         </div>

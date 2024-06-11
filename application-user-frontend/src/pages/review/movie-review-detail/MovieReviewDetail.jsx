@@ -112,8 +112,7 @@ function MovieReviewDetail() {
 
   useEffect(() => {
     const hash = location.hash;
-    console.log({ hash });
-    if (hash === '#phimdangchieu' && showtimesRef.current) {
+    if (hash === '#phimLichChieu' && showtimesRef.current) {
       showtimesRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [location]);
@@ -166,7 +165,7 @@ function MovieReviewDetail() {
             <ReviewList movie={movie} />
 
             {movieHasShowtimes.hasShowtimes && (
-              <section className="py-8 border-gray-200 border-t" id="phimdangchieu" ref={showtimesRef}>
+              <section className="py-8 border-gray-200 border-t" id="phimLichChieu" ref={showtimesRef}>
                 <div className="mb-2 sm:mb-0">
                   <h2 className="text-xl font-bold">Lịch chiếu {movie.name}</h2>
 

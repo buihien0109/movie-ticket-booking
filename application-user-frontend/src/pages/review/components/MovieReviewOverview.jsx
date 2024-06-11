@@ -51,7 +51,7 @@ function MovieReviewOverview({ movie, hasShowtimes }) {
                         {hasShowtimes && (
                             <div className="mt-2 md:mt-3 md:text-center">
                                 <Link
-                                    to="#phimdangchieu"
+                                    to="#phimLichChieu"
                                     className="btn inline-block cursor-pointer whitespace-nowrap rounded-md  border border-pink-500 bg-white  px-2 py-1 text-center text-sm font-bold text-pink-600 text-opacity-90 transition-all hover:bg-pink-100">
                                     Đặt vé ngay
                                 </Link>
@@ -61,7 +61,12 @@ function MovieReviewOverview({ movie, hasShowtimes }) {
                 </div>
                 <hr className="-mx-5 mt-3 h-1 bg-gray-200 md:hidden" />
             </div>
-            <ModalTrailer movie={movie} open={open} handleOpen={handleOpen} />
+            <ModalTrailer
+                movie={movie}
+                open={open}
+                handleOpen={handleOpen}
+                hasShowtimes={hasShowtimes}
+            />
         </>
     )
 }
