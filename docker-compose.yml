@@ -23,6 +23,7 @@ services:
     restart: always
     volumes:
       - ./data.sql:/docker-entrypoint-initdb.d/init.sql
+      - data_ticket:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 123
     networks:
@@ -60,6 +61,9 @@ services:
       - SPRING_MAIL_PASSWORD=pavm rwzs bzjg kkrr
     networks:
       - app-ticket-network
+
+volumes:
+  data_ticket:
 
 networks:
   app-ticket-network:
